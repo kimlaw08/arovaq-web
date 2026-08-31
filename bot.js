@@ -30,25 +30,17 @@ app.listen(PORT, () => {
 
 // --- 3. BOT COMMAND HANDLERS ---
 
-// /start command: Registers user and tracks referral deep links
+// /start command
 bot.command('start', async (ctx) => {
     try {
         const userId = ctx.from.id;
         const username = ctx.from.username || 'user_' + userId;
         const startPayload = ctx.payload;
 
-        // Save/Update user profile in Supabase
         await supabase.from('profiles').upsert({
             telegram_id: String(userId),
             username: username,
             role: 'creator'
-        }, { onConflict: 'telegram_id' });
-
-        // Save/Update affiliate record and bind referrer if present
-        await supabase.from('affiliates').upsert({
-            telegram_id: String(userId),
-            username: username,
-            referred_by: startPayload ? String(startPayload) : null
         }, { onConflict: 'telegram_id' });
 
         const welcomeMessage = `👋 **Welcome to AROVAQ — VERIFIED VALUE.**\n\n` +
@@ -72,7 +64,7 @@ bot.command('start', async (ctx) => {
     }
 });
 
-// /leaderboard command: Synchronized clean handles matching your Mini App
+// /leaderboard command: Perfectly synchronized with your Mini App
 bot.command('leaderboard', async (ctx) => {
     try {
         let message = `🏆 **AROVAQ Pre-Launch Network Rankings** 🏆\n\n`;
@@ -99,36 +91,29 @@ bot.command('leaderboard', async (ctx) => {
     }
 });
 
-// /categories command: Fetches active product drops from Supabase
+// /categories command: Synchronized with your Mini App featured drops
 bot.command('categories', async (ctx) => {
     try {
-        const { data: products, error } = await supabase
-            .from('products')
-            .select('title, price_usd')
-            .limit(5);
+        let message = `📁 **AROVAQ Curated Categories & Drops**\n\n` +
+                      `1. **Future Express: The Decentralized Age** — $8 / KES 1,040\n` +
+                      `2. **Creator Economy Blueprint 2026** — $15 / KES 1,950\n\n` +
+                      `🚀 Open the Mini App below to explore full collections and buy instantly!`;
 
-        if (error) {
-            console.error('Error fetching products:', error.message);
-            return ctx.reply('⚠️ Unable to load categories right now.');
-        }
-
-        let message = `📁 **AROVAQ Curated Categories & Drops**\n\n`;
-        if (products && products.length > 0) {
-            products.forEach((p, i) => {
-                message += `${i + 1}. **${p.title}** — $${p.price_usd}\n`;
-            });
-        } else {
-            message += `No active product drops listed yet. Use /list to add your product!`;
-        }
-
-        await ctx.reply(message, { parse_mode: 'Markdown' });
+        await ctx.reply(message, {
+            parse_mode: 'Markdown',
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: '🚀 Open Arovaq Mini App', web_app: { url: webAppUrl } }]
+                ]
+            }
+        });
     } catch (err) {
         console.error('Error in /categories:', err);
         await ctx.reply('⚠️ Error loading categories.');
     }
 });
 
-// /list command: Directs users to list items
+// /list command
 bot.command('list', async (ctx) => {
     await ctx.reply(
         `📦 **List Your Digital Product or Service**\n\n` +
@@ -167,6 +152,5 @@ bot.launch().then(() => {
     console.error('Failed to launch bot:', err);
 });
 
-// Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
