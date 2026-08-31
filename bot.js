@@ -148,8 +148,10 @@ bot.action('btn_list', async (ctx) => {
     return ctx.reply('Type /list to start listing your product.');
 });
 
-// --- 5. LAUNCH BOT ---
-bot.launch().then(() => {
+// --- 5. LAUNCH BOT WITH WEBHOOK RESET ---
+bot.telegram.deleteWebhook({ drop_pending_updates: true }).then(() => {
+    return bot.launch();
+}).then(() => {
     console.log('🤖 Arovaq Telegram Bot successfully launched and polling!');
 }).catch(err => {
     console.error('Failed to launch bot:', err);
