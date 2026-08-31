@@ -16,7 +16,7 @@ if (!token) {
 const bot = new Telegraf(token);
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// --- 2. EXPRESS SERVER FOR RENDER FREE WEB SERVICE ---
+// --- 2. EXPRESS SERVER FOR RENDER HEALTH CHECKS ---
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -30,7 +30,7 @@ app.listen(PORT, () => {
 
 // --- 3. BOT COMMAND HANDLERS ---
 
-// /start command
+// /start command: Registers user and tracks referral deep links
 bot.command('start', async (ctx) => {
     try {
         const userId = ctx.from.id;
@@ -43,13 +43,18 @@ bot.command('start', async (ctx) => {
             role: 'creator'
         }, { onConflict: 'telegram_id' });
 
-        const welcomeMessage = `👋 **Welcome to AROVAQ — VERIFIED VALUE.**\n\n` +
+        await supabase.from('affiliates').upsert({
+            telegram_id: String(userId),
+            username: username,
+            referred_by: startPayload ? String(startPayload) : null
+        }, { onConflict: 'telegram_id' });
+
+        const welcomeMessage = `👋 Welcome to AROVAQ — VERIFIED VALUE.\n\n` +
             `A connected digital marketplace where creators, sellers, buyers, and affiliates meet.\n\n` +
             `✨ Create\n📦 Sell\n🛒 Buy\n📈 Earn\n\n` +
             `🔒 Your account is securely bound to your unique Telegram ID (${userId}) for verified product access.`;
 
         await ctx.reply(welcomeMessage, {
-            parse_mode: 'Markdown',
             reply_markup: {
                 inline_keyboard: [
                     [{ text: '🚀 Open Arovaq Mini App', web_app: { url: webAppUrl } }],
@@ -64,43 +69,42 @@ bot.command('start', async (ctx) => {
     }
 });
 
-// /leaderboard command: Perfectly synchronized with your Mini App
+// /leaderboard command: Plain text format to prevent underscore parsing errors
 bot.command('leaderboard', async (ctx) => {
     try {
-        let message = `🏆 **AROVAQ Pre-Launch Network Rankings** 🏆\n\n`;
+        let message = `🏆 AROVAQ Pre-Launch Network Rankings 🏆\n\n`;
 
-        message += `👥 **Top Affiliates**\n` +
+        message += `👥 Top Affiliates\n` +
                    `1. @kim_l — $1,420\n` +
                    `2. @baze_ke — $980\n` +
                    `3. @startups — $650\n\n`;
 
-        message += `🚀 **Top Creators**\n` +
+        message += `🚀 Top Creators\n` +
                    `1. @alpha_edu — $2,890\n` +
                    `2. @masterclass — $1,750\n` +
                    `3. @vectorfx — $1,120\n\n`;
 
-        message += `💡 **Pre-Launch Note**\n` +
+        message += `💡 Pre-Launch Note\n` +
                    `15-month reward window active.\n` +
                    `5% foundational yield starting from listing date.\n\n` +
-                   `✨ **VERIFIED VALUE.**`;
+                   `✨ VERIFIED VALUE.`;
 
-        await ctx.reply(message, { parse_mode: 'Markdown' });
+        await ctx.reply(message);
     } catch (err) {
         console.error('Error in /leaderboard:', err);
         await ctx.reply('⚠️ Unable to load leaderboard right now.');
     }
 });
 
-// /categories command: Synchronized with your Mini App featured drops
+// /categories command: Synchronized with Mini App featured drops
 bot.command('categories', async (ctx) => {
     try {
-        let message = `📁 **AROVAQ Curated Categories & Drops**\n\n` +
-                      `1. **Future Express: The Decentralized Age** — $8 / KES 1,040\n` +
-                      `2. **Creator Economy Blueprint 2026** — $15 / KES 1,950\n\n` +
+        let message = `📁 AROVAQ Curated Categories & Drops\n\n` +
+                      `1. Future Express: The Decentralized Age — $8 / KES 1,040\n` +
+                      `2. Creator Economy Blueprint 2026 — $15 / KES 1,950\n\n` +
                       `🚀 Open the Mini App below to explore full collections and buy instantly!`;
 
         await ctx.reply(message, {
-            parse_mode: 'Markdown',
             reply_markup: {
                 inline_keyboard: [
                     [{ text: '🚀 Open Arovaq Mini App', web_app: { url: webAppUrl } }]
@@ -113,13 +117,12 @@ bot.command('categories', async (ctx) => {
     }
 });
 
-// /list command
+// /list command: Directs users to list items
 bot.command('list', async (ctx) => {
     await ctx.reply(
-        `📦 **List Your Digital Product or Service**\n\n` +
+        `📦 List Your Digital Product or Service\n\n` +
         `To list your assets on Arovaq and secure your foundational yield, open the Mini App below.`,
         {
-            parse_mode: 'Markdown',
             reply_markup: {
                 inline_keyboard: [
                     [{ text: '🚀 Open Arovaq Mini App to List', web_app: { url: webAppUrl } }]
