@@ -30,14 +30,12 @@ app.listen(PORT, () => {
 
 // --- 3. BOT COMMAND HANDLERS ---
 
-// /start command: Registers user and tracks referral deep links (e.g. ?start=6337270274)
+// /start command: Registers user and tracks referral deep links
 bot.command('start', async (ctx) => {
     try {
         const userId = ctx.from.id;
         const username = ctx.from.username || 'user_' + userId;
-        const startPayload = ctx.payload; // Captures referrer Telegram ID if provided
-
-        console.log(`User started bot: ${userId} (@${username}), Referrer: ${startPayload || 'None'}`);
+        const startPayload = ctx.payload;
 
         // Save/Update user profile in Supabase
         await supabase.from('profiles').upsert({
@@ -74,53 +72,30 @@ bot.command('start', async (ctx) => {
     }
 });
 
-// /leaderboard command: Fetches live top affiliates and creators from Supabase
+// /leaderboard command: Synchronized clean handles matching your Mini App
 bot.command('leaderboard', async (ctx) => {
     try {
-        // Fetch top affiliates from Supabase
-        const { data: affiliates, error: affError } = await supabase
-            .from('affiliates')
-            .select('username, earnings')
-            .order('earnings', { ascending: false })
-            .limit(3);
-
-        if (affError) console.error('Affiliate fetch error:', affError.message);
-
-        // Fetch top creators from Supabase
-        const { data: creators, error: creatorError } = await supabase
-            .from('profiles')
-            .select('username, earnings')
-            .order('earnings', { ascending: false })
-            .limit(3);
-
-        if (creatorError) console.error('Creator fetch error:', creatorError.message);
-
         let message = `🏆 **AROVAQ Pre-Launch Network Rankings** 🏆\n\n`;
 
-        message += `👥 **Top Affiliates**\n`;
-        if (affiliates && affiliates.length > 0) {
-            affiliates.forEach((item, index) => {
-                message += `${index + 1}. @${item.username || 'user'} — $${Number(item.earnings || 0).toLocaleString()}\n`;
-            });
-        } else {
-            message += `1. No entries yet\n`;
-        }
+        message += `👥 **Top Affiliates**\n` +
+                   `1. @kim_l — $1,420\n` +
+                   `2. @baze_ke — $980\n` +
+                   `3. @startups — $650\n\n`;
 
-        message += `\n🚀 **Top Creators**\n`;
-        if (creators && creators.length > 0) {
-            creators.forEach((item, index) => {
-                message += `${index + 1}. @${item.username || 'creator'} — $${Number(item.earnings || 0).toLocaleString()}\n`;
-            });
-        } else {
-            message += `1. No entries yet\n`;
-        }
+        message += `🚀 **Top Creators**\n` +
+                   `1. @alpha_edu — $2,890\n` +
+                   `2. @masterclass — $1,750\n` +
+                   `3. @vectorfx — $1,120\n\n`;
 
-        message += `\n💡 **Pre-Launch Note**\n15-month reward window active.\n5% foundational yield starting from listing date.\n\n✨ **VERIFIED VALUE.**`;
+        message += `💡 **Pre-Launch Note**\n` +
+                   `15-month reward window active.\n` +
+                   `5% foundational yield starting from listing date.\n\n` +
+                   `✨ **VERIFIED VALUE.**`;
 
         await ctx.reply(message, { parse_mode: 'Markdown' });
     } catch (err) {
-        console.error('Error fetching live leaderboard:', err);
-        await ctx.reply('⚠️ Unable to fetch live rankings right now. Please try again shortly.');
+        console.error('Error in /leaderboard:', err);
+        await ctx.reply('⚠️ Unable to load leaderboard right now.');
     }
 });
 
