@@ -124,13 +124,84 @@ bot.command('start', async (ctx) => {
     }
 });
 
-// /leaderboard command
+// /leaderboard command: Dynamic Supabase tracking with First-Come (<10) vs Volume (>10) rules
 bot.command('leaderboard', async (ctx) => {
     try {
-        let message = `🏆 **AROVAQ Pre-Launch Network Rankings** 🏆\n\n`;
-        message += `👥 **Top Affiliates**\n1. @kim_l — $1,420\n2. @baze_ke — $980\n3. @startups — $650\n\n`;
-        message += `🚀 **Top Creators**\n1. @alpha_edu — $2,890\n2. @masterclass — $1,750\n3. @vectorfx — $1,120\n\n`;
-        message += `💡 **Pre-Launch Note**\n15-month reward window active.\n5% foundational yield starting from listing date.\n\n✨ **VERIFIED VALUE.**`;
+        // 1. Fetch Affiliates Leaderboard from Supabase
+        const { data: affiliatesData } = await supabase
+            .from('affiliates')
+            .select('username, referred_by')
+            .not('referred_by', 'is', null);
+
+        const affiliateCounts = {};
+        if (affiliatesData) {
+            affiliatesData.forEach(row => {
+                const refBy = row.referred_by;
+                affiliateCounts[refBy] = (affiliateCounts[refBy] || 0) + 1;
+            });
+        }
+        
+        const sortedAffiliates = Object.entries(affiliateCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10);
+
+        let affiliateText = "";
+        if (sortedAffiliates.length > 0) {
+            sortedAffiliates.forEach(([id, count], idx) => {
+                affiliateText += `${idx + 1}. ID ${id} — ${count} referral${count > 1 ? 's' : ''}\n`;
+            });
+        } else {
+            affiliateText = `1. Be the first to refer and claim the top spot!\n`;
+        }
+
+        // 2. Fetch Creator Leaderboard from Supabase with First-Come vs Volume logic
+        const { data: productsData } = await supabase
+            .from('products')
+            .select('seller_id, created_at, profiles(username)');
+
+        const creatorMap = {};
+        if (productsData) {
+            productsData.forEach(item => {
+                const id = item.seller_id;
+                const username = item.profiles?.username || `creator_${id}`;
+                if (!creatorMap[id]) {
+                    creatorMap[id] = {
+                        username: username,
+                        count: 0,
+                        firstListed: item.created_at
+                    };
+                }
+                creatorMap[id].count++;
+                if (new Date(item.created_at) < new Date(creatorMap[id].firstListed)) {
+                    creatorMap[id].firstListed = item.created_at;
+                }
+            });
+        }
+
+        let creatorArray = Object.values(creatorMap);
+        const totalCreators = creatorArray.length;
+
+        if (totalCreators <= 10) {
+            creatorArray.sort((a, b) => new Date(a.firstListed) - new Date(b.firstListed));
+        } else {
+            creatorArray.sort((a, b) => b.count - a.count);
+            creatorArray = creatorArray.slice(0, 10);
+        }
+
+        let creatorText = "";
+        if (creatorArray.length > 0) {
+            creatorArray.forEach((c, idx) => {
+                creatorText += `${idx + 1}. @${c.username} — ${c.count} product${c.count > 1 ? 's' : ''}\n`;
+            });
+        } else {
+            creatorText = `1. No product listings yet. Be among the first!\n`;
+        }
+
+        let message = `🏆 **AROVAQ Pre-Launch Network Rankings** 🏆\n\n` +
+                      `👥 **Top Affiliates**\n${affiliateText}\n` +
+                      `🚀 **Top Creators**\n${creatorText}\n` +
+                      `💡 **Pre-Launch Note**\n15-month reward window active.\n5% foundational yield starting from listing date.\n\n` +
+                      `✨ **VERIFIED VALUE.**`;
 
         await ctx.reply(message, { parse_mode: 'Markdown' });
     } catch (err) {
