@@ -3,12 +3,13 @@ const { createClient } = require('@supabase/supabase-js');
 const express = require('express');
 
 // --- 1. ENVIRONMENT & CLIENT SETUP ---
-const token = process.env.BOT_TOKEN;
+const token = process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
+const webAppUrl = process.env.WEB_APP_URL || process.env.AROVAQ_MINI_APP_URL || 'https://arovaq-landingpage.vercel.app';
 
 if (!token) {
-    console.error('BOT_TOKEN environment variable is missing!');
+    console.error('BOT_TOKEN / TELEGRAM_BOT_TOKEN environment variable is missing!');
     process.exit(1);
 }
 
@@ -61,7 +62,7 @@ bot.command('start', async (ctx) => {
             parse_mode: 'Markdown',
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: '🚀 Open Arovaq Mini App', web_app: { url: process.env.WEB_APP_URL || 'https://arovaq-landingpage.vercel.app' } }],
+                    [{ text: '🚀 Open Arovaq Mini App', web_app: { url: webAppUrl } }],
                     [{ text: '📁 Categories', callback_data: 'btn_categories' }, { text: '🏆 Rankings', callback_data: 'btn_rankings' }],
                     [{ text: '📦 List Product', callback_data: 'btn_list' }]
                 ]
@@ -161,7 +162,7 @@ bot.command('list', async (ctx) => {
             parse_mode: 'Markdown',
             reply_markup: {
                 inline_keyboard: [
-                    [{ text: '🚀 Open Arovaq Mini App to List', web_app: { url: process.env.WEB_APP_URL || 'https://arovaq-landingpage.vercel.app' } }]
+                    [{ text: '🚀 Open Arovaq Mini App to List', web_app: { url: webAppUrl } }]
                 ]
             }
         }
