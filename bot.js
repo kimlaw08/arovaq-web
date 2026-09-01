@@ -2,14 +2,14 @@ const { Telegraf, Markup } = require('telegraf');
 const { createClient } = require('@supabase/supabase-js');
 const express = require('express');
 
-// Initialize environment variables with secure fallbacks
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+// Initialize environment variables matching your Render dashboard keys precisely
+const BOT_TOKEN = process.env.BOT_TOKEN;
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ftheyucrrfblvgsceitd.supabase.co';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_KEY || 'YOUR_SUPABASE_KEY_HERE';
-const MINIPAPP_URL = process.env.AROVAQ_MINI_PAPP_URL || 'https://arovaq-portal-2026.vercel.app/?v=2'; // Your live Vercel Mini App URL
+const SUPABASE_ANON_KEY = process.env.SUPABASE_KEY;
+const MINIPAPP_URL = process.env.AROVAQ_MINI_APP_URL || 'https://arovaq-portal-2026.vercel.app';
 
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const bot = new Telegraf(BOT_TOKEN);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Minimal Express server to satisfy Render health checks and prevent port crashing
 const app = express();
