@@ -1,289 +1,145 @@
-const { Telegraf } = require('telegraf');
+const { Telegraf, Markup } = require('telegraf');
 const { createClient } = require('@supabase/supabase-js');
 const express = require('express');
 
-// --- 1. ENVIRONMENT & CLIENT SETUP ---
-const token = process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const webAppUrl = process.env.WEB_APP_URL || process.env.AROVAQ_MINI_APP_URL || 'https://arovaq-landingpage.vercel.app';
+// Initialize environment variables with secure fallbacks
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ftheyucrrfblvgsceitd.supabase.co';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY_HERE';
+const MINIPAPP_URL = process.env.MINIPAPP_URL || 'https://arovaq-portal-2026.vercel.app'; // Your live Vercel Mini App URL
 
-if (!token) {
-    console.error('BOT_TOKEN / TELEGRAM_BOT_TOKEN environment variable is missing!');
-    process.exit(1);
-}
+const bot = new Telegraf(BOT_TOKEN);
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const bot = new Telegraf(token);
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// --- 2. EXPRESS SERVER (HEALTH CHECK & MINI APP LISTING API) ---
+// Minimal Express server to satisfy Render health checks and prevent port crashing
 const app = express();
-app.use(express.json()); // Required to parse JSON payloads from your Mini App
-
 const PORT = process.env.PORT || 3000;
 
-// Health check route for Render
-app.get('/', (req, res) => {
-    res.send('Arovaq Bot and API server is running live and healthy!');
-});
-
-// API Endpoint called by your Mini App when a user lists a product
-app.post('/api/list', async (req, res) => {
-    try {
-        const { sellerTelegramId, title, price } = req.body;
-
-        if (!sellerTelegramId || !title) {
-            return res.status(400).json({ success: false, error: 'Missing required fields' });
-        }
-
-        // 1. Save the product to Supabase
-        const { error: dbError } = await supabase.from('products').insert([{
-            seller_id: String(sellerTelegramId),
-            title: title,
-            price: price || '0'
-        }]);
-
-        if (dbError) {
-            console.error('Supabase product insert error:', dbError);
-        }
-
-        // 2. Notify the seller on Telegram
-        await bot.telegram.sendMessage(
-            sellerTelegramId,
-            `📦 **Success!** Your product "${title}" has been listed on Arovaq.`,
-            { parse_mode: 'Markdown' }
-        ).catch(err => console.error('Failed to notify seller:', err));
-
-        // 3. Find the referrer in Supabase affiliates table and notify them
-        const { data: affiliate } = await supabase
-            .from('affiliates')
-            .select('referred_by')
-            .eq('telegram_id', String(sellerTelegramId))
-            .single();
-
-        if (affiliate && affiliate.referred_by) {
-            await bot.telegram.sendMessage(
-                affiliate.referred_by,
-                `🎉 **Great news!** Your referral just successfully listed a new product ("${title}") on Arovaq.`,
-                { parse_mode: 'Markdown' }
-            ).catch(err => console.error('Failed to notify referrer:', err));
-        }
-
-        return res.status(200).json({ success: true, message: 'Product listed and notifications sent!' });
-    } catch (err) {
-        console.error('Error in /api/list endpoint:', err);
-        return res.status(500).json({ success: false, error: err.message });
-    }
-});
-
+app.get('/', (req, res) => res.send('Arovaq Bot Server is live and running!'));
 app.listen(PORT, () => {
-    console.log(`HTTP server & API listening on port ${PORT}`);
+    console.log(`HTTP server listening on port ${PORT}`);
 });
 
-// --- 3. BOT COMMAND HANDLERS ---
+// --- TELEGRAM COMMAND HANDLERS ---
 
-// /start command: Registers user and tracks referral deep links
-bot.command('start', async (ctx) => {
+// /start command with interactive inline buttons
+bot.start(async (ctx) => {
+    const userId = ctx.from.id;
+    const firstName = ctx.from.first_name || 'Creator';
+
     try {
-        const userId = ctx.from.id;
-        const username = ctx.from.username || 'user_' + userId;
-        const startPayload = ctx.payload; // Captures Person A's ID if clicked from a referral link
+        // Register or update user profile in Supabase
+        await supabase.from('profiles').upsert([
+            { telegram_id: userId, username: ctx.from.username || 'unknown', updated_at: new Date() }
+        ], { onConflict: 'telegram_id' });
+    } catch (err) {
+        console.error('Error saving user profile to Supabase:', err);
+    }
 
-        // Save or update user profile
-        await supabase.from('profiles').upsert({
-            telegram_id: String(userId),
-            username: username,
-            role: 'creator'
-        }, { onConflict: 'telegram_id' });
-
-        // Save or update affiliate record with referral binding if payload exists
-        await supabase.from('affiliates').upsert({
-            telegram_id: String(userId),
-            username: username,
-            referred_by: startPayload ? String(startPayload) : null
-        }, { onConflict: 'telegram_id' });
-
-        const welcomeMessage = `👋 **Welcome to AROVAQ — VERIFIED VALUE.**\n\n` +
-            `A connected digital marketplace where creators, sellers, buyers, and affiliates meet.\n\n` +
-            `✨ Create\n📦 Sell\n🛒 Buy\n📈 Earn\n\n` +
-            `🔒 Your account is securely bound to your unique Telegram ID (${userId}) for verified product access.`;
-
-        await ctx.reply(welcomeMessage, {
+    await ctx.reply(
+        `👋 Welcome to **Arovaq**, ${firstName}!\n\n` +
+        `Your account is securely bound to your Telegram ID (\`${userId}\`) for verified digital asset access and monetization.\n\n` +
+        `Choose an option below to explore the marketplace, list your assets, or manage your network:`,
+        {
             parse_mode: 'Markdown',
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: '🚀 Open Arovaq Mini App', web_app: { url: webAppUrl } }],
-                    [{ text: '📁 Categories', callback_data: 'btn_categories' }, { text: '🏆 Rankings', callback_data: 'btn_rankings' }],
-                    [{ text: '📦 List Product', callback_data: 'btn_list' }]
-                ]
-            }
-        });
-    } catch (err) {
-        console.error('Error in /start command:', err);
-        await ctx.reply('⚠️ Welcome! An error occurred while setting up your profile.');
-    }
+            ...Markup.inlineKeyboard([
+                [Markup.button.webApp('🚀 Open Arovaq Mini App', MINIPAPP_URL)],
+                [Markup.button.callback('📁 Categories', 'btn_categories'), Markup.button.callback('🏆 Rankings', 'btn_rankings')],
+                [Markup.button.callback('📦 List Product', 'btn_list')]
+            ])
+        }
+    );
 });
 
-// /leaderboard command: Dynamic Supabase tracking with First-Come (<10) vs Volume (>10) rules
-bot.command('leaderboard', async (ctx) => {
-    try {
-        // 1. Fetch Affiliates Leaderboard from Supabase
-        const { data: affiliatesData } = await supabase
-            .from('affiliates')
-            .select('username, referred_by')
-            .not('referred_by', 'is', null);
+// /ref command to generate custom referral links
+bot.command('ref', async (ctx) => {
+    const userId = ctx.from.id;
+    const botUsername = ctx.botInfo ? ctx.botInfo.username : 'Arovaq_bot';
+    const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
 
-        const affiliateCounts = {};
-        if (affiliatesData) {
-            affiliatesData.forEach(row => {
-                const refBy = row.referred_by;
-                affiliateCounts[refBy] = (affiliateCounts[refBy] || 0) + 1;
-            });
+    await ctx.reply(
+        `🔗 **Your Arovaq Referral Link**\n\n` +
+        `Share this unique link with creators, sellers, and affiliates to expand your network:\n\n` +
+        `\`${refLink}\`\n\n` +
+        `Track your active network growth and earnings directly inside the Mini App!`,
+        { parse_mode: 'Markdown' }
+    );
+});
+
+// /list command for publishing assets
+bot.command('list', async (ctx) => {
+    await ctx.reply(
+        `📦 **List Your Digital Product or Service**\n\n` +
+        `To publish your assets on Arovaq with KES or USD pricing, launch our Mini App below:`,
+        {
+            parse_mode: 'Markdown',
+            ...Markup.inlineKeyboard([
+                [Markup.button.webApp('📦 Open Mini App to List', MINIPAPP_URL)]
+            ])
         }
-        
-        const sortedAffiliates = Object.entries(affiliateCounts)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10);
-
-        let affiliateText = "";
-        if (sortedAffiliates.length > 0) {
-            sortedAffiliates.forEach(([id, count], idx) => {
-                affiliateText += `${idx + 1}. ID ${id} — ${count} referral${count > 1 ? 's' : ''}\n`;
-            });
-        } else {
-            affiliateText = `1. Be the first to refer and claim the top spot!\n`;
-        }
-
-        // 2. Fetch Creator Leaderboard from Supabase with First-Come vs Volume logic
-        const { data: productsData } = await supabase
-            .from('products')
-            .select('seller_id, created_at, profiles(username)');
-
-        const creatorMap = {};
-        if (productsData) {
-            productsData.forEach(item => {
-                const id = item.seller_id;
-                const username = item.profiles?.username || `creator_${id}`;
-                if (!creatorMap[id]) {
-                    creatorMap[id] = {
-                        username: username,
-                        count: 0,
-                        firstListed: item.created_at
-                    };
-                }
-                creatorMap[id].count++;
-                if (new Date(item.created_at) < new Date(creatorMap[id].firstListed)) {
-                    creatorMap[id].firstListed = item.created_at;
-                }
-            });
-        }
-
-        let creatorArray = Object.values(creatorMap);
-        const totalCreators = creatorArray.length;
-
-        if (totalCreators <= 10) {
-            creatorArray.sort((a, b) => new Date(a.firstListed) - new Date(b.firstListed));
-        } else {
-            creatorArray.sort((a, b) => b.count - a.count);
-            creatorArray = creatorArray.slice(0, 10);
-        }
-
-        let creatorText = "";
-        if (creatorArray.length > 0) {
-            creatorArray.forEach((c, idx) => {
-                creatorText += `${idx + 1}. @${c.username} — ${c.count} product${c.count > 1 ? 's' : ''}\n`;
-            });
-        } else {
-            creatorText = `1. No product listings yet. Be among the first!\n`;
-        }
-
-        let message = `🏆 **AROVAQ Pre-Launch Network Rankings** 🏆\n\n` +
-                      `👥 **Top Affiliates**\n${affiliateText}\n` +
-                      `🚀 **Top Creators**\n${creatorText}\n` +
-                      `💡 **Pre-Launch Note**\n15-month reward window active.\n5% foundational yield starting from listing date.\n\n` +
-                      `✨ **VERIFIED VALUE.**`;
-
-        await ctx.reply(message, { parse_mode: 'Markdown' });
-    } catch (err) {
-        console.error('Error in /leaderboard:', err);
-        await ctx.reply('⚠️ Unable to load leaderboard right now.');
-    }
+    );
 });
 
 // /categories command
 bot.command('categories', async (ctx) => {
-    try {
-        let message = `📁 **AROVAQ Curated Categories & Drops**\n\n` +
-                      `1. **Future Express: The Decentralized Age** — $8 / KES 1,040\n` +
-                      `2. **Creator Economy Blueprint 2026** — $15 / KES 1,950\n\n` +
-                      `🚀 Open the Mini App below to explore full collections and buy instantly!`;
-
-        await ctx.reply(message, {
-            parse_mode: 'Markdown',
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: '🚀 Open Arovaq Mini App', web_app: { url: webAppUrl } }]
-                ]
-            }
-        });
-    } catch (err) {
-        console.error('Error in /categories:', err);
-        await ctx.reply('⚠️ Error loading categories.');
-    }
-});
-
-// /list command
-bot.command('list', async (ctx) => {
     await ctx.reply(
-        `📦 **List Your Digital Product or Service**\n\n` +
-        `To list your assets on Arovaq and secure your foundational yield, open the Mini App below.`,
+        `📁 **Arovaq Curated Shelves & Categories**\n\n` +
+        `Explore our active asset categories:\n` +
+        `• 💻 Web3 & DeFi\n` +
+        `• 📚 Digital Ebooks\n` +
+        `• 🎓 Masterclasses\n` +
+        `• 🛠️ Business Templates\n\n` +
+        `Tap below to browse them live in the Mini App:`,
         {
             parse_mode: 'Markdown',
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: '🚀 Open Arovaq Mini App to List', web_app: { url: webAppUrl } }]
-                ]
-            }
+            ...Markup.inlineKeyboard([
+                [Markup.button.webApp('🔍 Explore Categories', MINIPAPP_URL)]
+            ])
         }
     );
 });
 
-// --- 4. CALLBACK BUTTON HANDLERS ---
+// /rankings command
+bot.command('rankings', async (ctx) => {
+    await ctx.reply(
+        `🏆 **Pre-Launch Network Rankings**\n\n` +
+        `Check out the top-performing creators and affiliates scaling up for the launch!`,
+        {
+            parse_mode: 'Markdown',
+            ...Markup.inlineKeyboard([
+                [Markup.button.webApp('🏆 View Full Leaderboard', MINIPAPP_URL)]
+            ])
+        }
+    );
+});
+
+// --- INLINE BUTTON CALLBACKS ---
+
 bot.action('btn_categories', async (ctx) => {
     await ctx.answerCbQuery();
-    return ctx.reply('Type /categories to browse active product shelves.');
+    await ctx.reply('Tap below to open categories in the Mini App:', Markup.inlineKeyboard([
+        [Markup.button.webApp('📁 Open Categories', MINIPAPP_URL)]
+    ]));
 });
 
 bot.action('btn_rankings', async (ctx) => {
     await ctx.answerCbQuery();
-    return ctx.reply('Type /leaderboard to view live network rankings.');
+    await ctx.reply('Tap below to open network rankings in the Mini App:', Markup.inlineKeyboard([
+        [Markup.button.webApp('🏆 Open Rankings', MINIPAPP_URL)]
+    ]));
 });
 
 bot.action('btn_list', async (ctx) => {
     await ctx.answerCbQuery();
-    return ctx.reply('Type /list to start listing your product.');
-});
-// Handle /ref command to generate referral links
-bot.command('ref', async (ctx) => {
-    const userId = ctx.from.id;
-    const refLink = `https://t.me/Arovaq_bot?start=ref_${userId}`;
-    
-    await ctx.reply(
-        `🔗 **Your Arovaq Referral Link**\n\n` +
-        `Share this unique link with creators, sellers, and affiliates to expand your network:\n\n` +
-        `${refLink}\n\n` +
-        `Track your active network and earnings directly inside the Arovaq Mini App!`
-    );
+    await ctx.reply('Tap below to list your product securely:', Markup.inlineKeyboard([
+        [Markup.button.webApp('📦 Open Listing Form', MINIPAPP_URL)]
+    ]));
 });
 
-// --- 5. LAUNCH BOT WITH WEBHOOK RESET ---
-bot.telegram.deleteWebhook({ drop_pending_updates: true }).then(() => {
-    return bot.launch();
-}).then(() => {
-    console.log('🤖 Arovaq Telegram Bot successfully launched and polling!');
-}).catch(err => {
-    console.error('Failed to launch bot:', err);
-});
+// Start the bot polling loop
+bot.launch();
+console.log('Arovaq Bot is live and running...');
 
+// Enable graceful shutdown
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
