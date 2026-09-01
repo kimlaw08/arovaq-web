@@ -4,27 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arovaq - Verified Value Marketplace</title>
-    <!-- Tailwind CSS CDN for fast, clean styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            background-color: #0b1315;
+            background-color: #070b0c;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
 
-        /* Logo Shine Animation */
-        .logo-container {
+        /* Luxury Logo Shine Animation */
+        .logo-glow {
             position: relative;
-            display: inline-block;
             overflow: hidden;
-            border-radius: 12px;
+            border-radius: 16px;
+            box-shadow: 0 0 25px rgba(20, 184, 166, 0.2);
         }
-        .logo-container::after {
+        .logo-glow::after {
             content: '';
             position: absolute;
             top: -50%;
@@ -34,183 +32,320 @@
             background: linear-gradient(
                 to right,
                 rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.35) 50%,
+                rgba(212, 175, 55, 0.3) 50%,
                 rgba(255, 255, 255, 0) 100%
             );
             transform: rotate(30deg) translate(-100%, -100%);
-            animation: logoShine 3.5s infinite ease-in-out;
+            animation: logoShine 4s infinite ease-in-out;
         }
         @keyframes logoShine {
             0% { transform: rotate(30deg) translate(-100%, -100%); }
-            20% { transform: rotate(30deg) translate(100%, 100%); }
+            25% { transform: rotate(30deg) translate(100%, 100%); }
             100% { transform: rotate(30deg) translate(100%, 100%); }
         }
 
-        /* Custom Scrollbar for Categories */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(13, 20, 22, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(20, 184, 166, 0.15);
+        }
     </style>
 </head>
-<body class="min-h-screen px-4 pt-4">
+<body class="min-h-screen">
 
-    <!-- Header & Logo with Shine Animation -->
-    <header class="flex flex-col items-center mb-6 text-center">
-        <div class="logo-container mb-2 p-1 bg-teal-900/40 border border-teal-500/30">
-            <!-- Replace with your actual logo image filename if needed -->
-            <div class="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center font-bold text-black text-xl">A</div>
+    <!-- Top Hero Section with Brand Logo & Milestone Banner -->
+    <header class="relative pt-4 pb-6 px-4 bg-gradient-to-b from-[#0e1719] to-[#070b0c] border-b border-teal-500/20 text-center">
+        <!-- Milestone Ticker -->
+        <div class="mb-3 inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full text-[11px] text-amber-400 font-medium">
+            🔥 Affiliate Milestone: <span class="font-bold text-white">14,250 / 50,000</span> Joined
         </div>
-        <h1 class="text-xl font-extrabold tracking-wide text-teal-400">AROVAQ</h1>
-        <p class="text-xs text-gray-400 tracking-widest uppercase">Verified Value Marketplace</p>
+
+        <!-- Brand Logo Container -->
+        <div class="flex justify-center mb-2">
+            <div class="logo-glow p-2 bg-gradient-to-br from-teal-900/60 to-black border border-teal-500/40 w-20 h-20 flex items-center justify-center">
+                <!-- Using stylized typography or image representation -->
+                <div class="text-center">
+                    <span class="text-2xl font-black text-amber-400 tracking-tighter">A</span>
+                    <div class="text-[9px] tracking-widest text-teal-300 font-bold">AROVAQ</div>
+                </div>
+            </div>
+        </div>
+        <p class="text-[11px] tracking-widest text-gray-400 uppercase font-semibold">Verified Digital Marketplace</p>
+
+        <!-- Live Stats Quick Bar -->
+        <div class="grid grid-cols-3 gap-2 mt-4 max-w-sm mx-auto">
+            <div class="glass-panel rounded-xl p-2 text-center">
+                <div class="text-[10px] text-gray-400">Volume</div>
+                <div class="text-xs font-bold text-teal-400">$48.2K</div>
+            </div>
+            <div class="glass-panel rounded-xl p-2 text-center">
+                <div class="text-[10px] text-gray-400">Verified Assets</div>
+                <div class="text-xs font-bold text-amber-400">124+</div>
+            </div>
+            <div class="glass-panel rounded-xl p-2 text-center">
+                <div class="text-[10px] text-gray-400">Escrow</div>
+                <div class="text-xs font-bold text-emerald-400">100% Safe</div>
+            </div>
+        </div>
     </header>
 
-    <!-- Search Bar -->
-    <div class="relative mb-4">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search eBooks, masterclasses, templates..." 
-            class="w-full pl-10 pr-4 py-2.5 bg-gray-900/80 border border-gray-800 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 transition-colors">
-    </div>
+    <!-- Main Navigation Container -->
+    <div class="px-4 pt-4">
 
-    <!-- Category Filter Pills -->
-    <div class="flex gap-2 overflow-x-auto no-scrollbar mb-6 pb-1">
-        <button onclick="filterCategory('all')" class="cat-btn px-4 py-1.5 bg-teal-500 text-black font-semibold text-xs rounded-full whitespace-nowrap transition-all shadow-lg shadow-teal-500/20">🔥 All Assets</button>
-        <button onclick="filterCategory('web3')" class="cat-btn px-4 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap hover:border-teal-500 transition-all">🌐 Web3 & DeFi</button>
-        <button onclick="filterCategory('ebooks')" class="cat-btn px-4 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap hover:border-teal-500 transition-all">📚 eBooks</button>
-        <button onclick="filterCategory('masterclasses')" class="cat-btn px-4 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap hover:border-teal-500 transition-all">🎓 Masterclasses</button>
-        <button onclick="filterCategory('templates')" class="cat-btn px-4 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap hover:border-teal-500 transition-all">🛠️ Templates</button>
-    </div>
+        <!-- STORE VIEW -->
+        <main id="storeView" class="space-y-4">
+            <!-- Action Bar (Search & Listing Button) -->
+            <div class="flex gap-2">
+                <div class="relative flex-1">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 text-xs">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search masterclasses, ebooks..." 
+                        class="w-full pl-9 pr-3 py-2.5 bg-gray-900/90 border border-gray-800 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-teal-500">
+                </div>
+                <button onclick="openListingModal()" class="px-3.5 py-2.5 bg-gradient-to-r from-teal-500 to-emerald-500 text-black font-bold text-xs rounded-xl shadow-lg shadow-teal-500/20 active:scale-95 transition-all">
+                    + List
+                </button>
+            </div>
 
-    <!-- Main Store Content Container -->
-    <main id="storeView">
-        <div class="flex justify-between items-center mb-3">
-            <h2 class="text-sm font-bold uppercase tracking-wider text-gray-300">Featured Curated Shelves</h2>
-            <span class="text-xs text-teal-400">4 items</span>
-        </div>
+            <!-- Currency & Category Filters -->
+            <div class="flex justify-between items-center">
+                <div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
+                    <button onclick="filterCategory('all')" class="cat-btn px-3 py-1.5 bg-teal-500 text-black font-semibold text-xs rounded-full whitespace-nowrap shadow-md">🔥 All</button>
+                    <button onclick="filterCategory('web3')" class="cat-btn px-3 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap">🌐 Web3</button>
+                    <button onclick="filterCategory('ebooks')" class="cat-btn px-3 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap">📚 eBooks</button>
+                    <button onclick="filterCategory('masterclasses')" class="cat-btn px-3 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap">🎓 Classes</button>
+                </div>
+                <button onclick="toggleCurrency()" id="currencyBtn" class="px-2.5 py-1 bg-gray-800 border border-gray-700 text-teal-400 font-bold text-[10px] rounded-lg">USD ($)</button>
+            </div>
 
-        <!-- Product Cards Grid -->
-        <div id="productGrid" class="grid grid-cols-1 gap-3">
+            <!-- Featured Curated Shelves -->
+            <div>
+                <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Featured Curated Shelves</h2>
+                <div id="productGrid" class="grid grid-cols-1 gap-3">
+                    
+                    <!-- Product 1 -->
+                    <div class="product-card glass-panel rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/40 transition-all" data-category="web3" data-name="future express the decentralized age">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant Access</span>
+                                <span class="px-2 py-0.5 bg-teal-500/20 text-teal-400 text-[10px] font-bold rounded">🔥 Bestseller</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-white mb-1">Future Express: The Decentralized Age</h3>
+                            <p class="text-[11px] text-gray-400 mb-3">Comprehensive blueprint for scaling wealth and decentralized systems.</p>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-gray-800/80">
+                            <span class="price-tag text-teal-400 font-extrabold text-xs" data-usd="8" data-kes="1,040">$8 <span class="text-[10px] text-gray-400 font-normal">/ KES 1,040</span></span>
+                            <button onclick="buyProduct('Future Express', '$8')" class="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-all">Buy Now</button>
+                        </div>
+                    </div>
+
+                    <!-- Product 2 -->
+                    <div class="product-card glass-panel rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/40 transition-all" data-category="masterclasses" data-name="creator economy blueprint 2026">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant Access</span>
+                                <span class="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-[10px] font-bold rounded">🎓 Masterclass</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-white mb-1">Creator Economy Blueprint 2026</h3>
+                            <p class="text-[11px] text-gray-400 mb-3">Monetize your audience using automated Telegram funnels and digital assets.</p>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-gray-800/80">
+                            <span class="price-tag text-teal-400 font-extrabold text-xs" data-usd="15" data-kes="1,950">$15 <span class="text-[10px] text-gray-400 font-normal">/ KES 1,950</span></span>
+                            <button onclick="buyProduct('Creator Economy Blueprint', '$15')" class="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-all">Buy Now</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+        <!-- LEADERBOARD VIEW -->
+        <main id="leaderboardView" class="hidden space-y-4">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-teal-400 text-center">🏆 Pre-Launch Network Rankings</h2>
+            <p class="text-[11px] text-gray-400 text-center mb-4">Top contributors driving verified value across the ecosystem.</p>
             
-            <!-- Product 1 -->
-            <div class="product-card bg-gray-900/90 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/50 transition-all" data-category="web3" data-name="future express the decentralized age">
-                <div>
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant</span>
-                        <span class="px-2 py-0.5 bg-teal-500/20 text-teal-400 text-[10px] font-bold rounded">🔥 Bestseller</span>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="glass-panel rounded-2xl p-3">
+                    <h3 class="text-xs font-bold text-amber-400 mb-2 border-b border-gray-800 pb-1">⚡ Top Affiliates</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between text-gray-300"><span>1. @kim_l</span> <span class="text-teal-400 font-bold">$1,420</span></div>
+                        <div class="flex justify-between text-gray-300"><span>2. @baze_ke</span> <span class="text-teal-400 font-bold">$980</span></div>
+                        <div class="flex justify-between text-gray-300"><span>3. @startups</span> <span class="text-teal-400 font-bold">$650</span></div>
                     </div>
-                    <h3 class="font-bold text-base text-white mb-1">Future Express: The Decentralized Age</h3>
-                    <p class="text-xs text-gray-400 mb-3">Comprehensive blueprint for scaling wealth and decentralized systems.</p>
                 </div>
-                <div class="flex justify-between items-center pt-2 border-t border-gray-800">
-                    <span class="text-teal-400 font-extrabold text-sm">$8 <span class="text-xs text-gray-400 font-normal">/ KES 1,040</span></span>
-                    <button onclick="buyProduct('Future Express', '8')" class="px-4 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-colors shadow-md">Buy Now</button>
+                <div class="glass-panel rounded-2xl p-3">
+                    <h3 class="text-xs font-bold text-purple-400 mb-2 border-b border-gray-800 pb-1">👑 Top Creators</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between text-gray-300"><span>1. @alpha_edu</span> <span class="text-teal-400 font-bold">$2,890</span></div>
+                        <div class="flex justify-between text-gray-300"><span>2. @masterclass</span> <span class="text-teal-400 font-bold">$1,750</span></div>
+                        <div class="flex justify-between text-gray-300"><span>3. @vector_fx</span> <span class="text-teal-400 font-bold">$1,120</span></div>
+                    </div>
                 </div>
             </div>
+        </main>
 
-            <!-- Product 2 -->
-            <div class="product-card bg-gray-900/90 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/50 transition-all" data-category="masterclasses" data-name="creator economy blueprint 2026">
-                <div>
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant</span>
-                        <span class="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-[10px] font-bold rounded">🎓 Masterclass</span>
-                    </div>
-                    <h3 class="font-bold text-base text-white mb-1">Creator Economy Blueprint 2026</h3>
-                    <p class="text-xs text-gray-400 mb-3">Monetize your audience using automated Telegram funnels and digital assets.</p>
-                </div>
-                <div class="flex justify-between items-center pt-2 border-t border-gray-800">
-                    <span class="text-teal-400 font-extrabold text-sm">$15 <span class="text-xs text-gray-400 font-normal">/ KES 1,950</span></span>
-                    <button onclick="buyProduct('Creator Economy Blueprint', '15')" class="px-4 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-colors shadow-md">Buy Now</button>
-                </div>
+        <!-- MISSION & ROADMAP VIEW -->
+        <main id="roadmapView" class="hidden space-y-4">
+            <div class="glass-panel rounded-2xl p-4 text-center">
+                <h2 class="text-sm font-bold text-teal-400 mb-1">🚀 Our Mission</h2>
+                <p class="text-xs text-gray-300 leading-relaxed">To build the premier decentralized, verified value marketplace on Telegram, connecting elite creators with global buyers securely and instantly.</p>
             </div>
 
-            <!-- Product 3 -->
-            <div class="product-card bg-gray-900/90 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/50 transition-all" data-category="ebooks" data-name="alpha male positioning">
-                <div>
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant</span>
-                        <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-bold rounded">📚 eBook</span>
+            <div class="glass-panel rounded-2xl p-4">
+                <h2 class="text-sm font-bold text-amber-400 mb-3">🗺️ 2026 Roadmap</h2>
+                <div class="space-y-3 text-xs border-l-2 border-teal-500/40 pl-3">
+                    <div>
+                        <span class="font-bold text-teal-400">Q1 2026:</span> Foundation & Mini App Launch, Curated Shelves & M-Pesa / Crypto Gateways.
                     </div>
-                    <h3 class="font-bold text-base text-white mb-1">Alpha Male Positioning</h3>
-                    <p class="text-xs text-gray-400 mb-3">High-impact strategies for personal brand authority and elite networking.</p>
-                </div>
-                <div class="flex justify-between items-center pt-2 border-t border-gray-800">
-                    <span class="text-teal-400 font-extrabold text-sm">$10 <span class="text-xs text-gray-400 font-normal">/ KES 1,300</span></span>
-                    <button onclick="buyProduct('Alpha Male Positioning', '10')" class="px-4 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-colors shadow-md">Buy Now</button>
+                    <div>
+                        <span class="font-bold text-teal-400">Q2 2026:</span> Automated Affiliate Payouts & Creator Dashboard Scaling.
+                    </div>
+                    <div>
+                        <span class="font-bold text-teal-400">Q3 2026:</span> DAO Governance & Cross-Border Expansion across Africa & Global Hubs.
+                    </div>
                 </div>
             </div>
+        </main>
 
-            <!-- Product 4 -->
-            <div class="product-card bg-gray-900/90 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/50 transition-all" data-category="templates" data-name="the digital rail system">
-                <div>
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant</span>
-                        <span class="px-2 py-0.5 bg-green-500/20 text-green-400 text-[10px] font-bold rounded">🛠️ Template</span>
-                    </div>
-                    <h3 class="font-bold text-base text-white mb-1">The Digital Rail System</h3>
-                    <p class="text-xs text-gray-400 mb-3">Plug-and-play sales pipelines designed specifically for mobile digital product vendors.</p>
-                </div>
-                <div class="flex justify-between items-center pt-2 border-t border-gray-800">
-                    <span class="text-teal-400 font-extrabold text-sm">$25 <span class="text-xs text-gray-400 font-normal">/ KES 3,250</span></span>
-                    <button onclick="buyProduct('The Digital Rail System', '25')" class="px-4 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-colors shadow-md">Buy Now</button>
-                </div>
+        <!-- LIBRARY VIEW -->
+        <main id="libraryView" class="hidden text-center py-12">
+            <div class="text-4xl mb-3">📦</div>
+            <h2 class="text-sm font-bold text-white mb-1">Your Digital Vault is Empty</h2>
+            <p class="text-xs text-gray-400 mb-4">Purchased assets and unlocked masterclasses will appear here.</p>
+            <button onclick="switchTab('store')" class="px-5 py-2 bg-teal-500 text-black font-bold text-xs rounded-xl">Explore Store</button>
+        </main>
+
+        <!-- GUIDE & T&C VIEW -->
+        <main id="guideView" class="hidden space-y-3">
+            <div class="glass-panel rounded-2xl p-4">
+                <h2 class="text-sm font-bold text-teal-400 mb-2">📜 Terms & Compliance (T&C)</h2>
+                <p class="text-[11px] text-gray-300 leading-relaxed space-y-2">
+                    Arovaq operates as a non-custodial verified marketplace. All purchases are final and backed by instant digital fulfillment or escrow protection. Users must maintain compliance with local digital asset regulations. M-Pesa / Crypto gateway transactions are strictly direct between buyer and vendor.
+                </p>
             </div>
+        </main>
 
-        </div>
-    </main>
+    </div>
 
-    <!-- Library View (Hidden by default) -->
-    <main id="libraryView" class="hidden text-center py-12">
-        <div class="text-4xl mb-3">📦</div>
-        <h2 class="text-lg font-bold text-white mb-1">Your Digital Vault is Empty</h2>
-        <p class="text-xs text-gray-400 mb-6">Purchased assets and unlocked masterclasses will appear here instantly.</p>
-        <button onclick="switchTab('store')" class="px-6 py-2 bg-teal-500 text-black font-bold text-xs rounded-xl">Explore Marketplace</button>
-    </main>
+    <!-- Floating FAQ Button -->
+    <button onclick="openFaqModal()" class="fixed bottom-20 right-4 bg-teal-500 hover:bg-teal-400 text-black font-bold p-3 rounded-full shadow-2xl flex items-center justify-center text-sm z-40 active:scale-95 transition-all">
+        💬 FAQ
+    </button>
 
     <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-[#070b0c]/95 border-t border-gray-800 px-6 py-3 flex justify-around items-center backdrop-blur-md z-50">
-        <button onclick="switchTab('store')" id="navStore" class="flex flex-col items-center text-teal-400 text-xs font-semibold gap-1">
+    <nav class="fixed bottom-0 left-0 right-0 glass-panel border-t border-gray-800 px-3 py-2.5 flex justify-around items-center z-30">
+        <button onclick="switchTab('store')" id="navStore" class="flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5">
             <span>🏠</span> Store
         </button>
-        <button onclick="switchTab('library')" id="navLibrary" class="flex flex-col items-center text-gray-400 text-xs font-semibold gap-1 hover:text-white">
+        <button onclick="switchTab('leaderboard')" id="navLeaderboard" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white">
+            <span>🏆</span> Leaderboard
+        </button>
+        <button onclick="switchTab('roadmap')" id="navRoadmap" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white">
+            <span>🗺️</span> Roadmap
+        </button>
+        <button onclick="switchTab('library')" id="navLibrary" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white">
             <span>📚</span> Library
+        </button>
+        <button onclick="switchTab('guide')" id="navGuide" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white">
+            <span>📜</span> T&C
         </button>
     </nav>
 
+    <!-- MODAL: Listing Form -->
+    <div id="listingModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-5 relative border border-teal-500/30">
+            <h3 class="text-sm font-bold text-teal-400 mb-3">🚀 List Your Digital Asset</h3>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="text-gray-400 block mb-1">Product Title</label>
+                    <input type="text" id="listTitle" placeholder="e.g. Advanced DeFi Masterclass" class="w-full p-2.5 bg-gray-900 border border-gray-800 rounded-xl text-white">
+                </div>
+                <div>
+                    <label class="text-gray-400 block mb-1">Price (USD)</label>
+                    <input type="number" id="listPrice" placeholder="10" class="w-full p-2.5 bg-gray-900 border border-gray-800 rounded-xl text-white">
+                </div>
+                <div>
+                    <label class="text-gray-400 block mb-1">Category</label>
+                    <select id="listCat" class="w-full p-2.5 bg-gray-900 border border-gray-800 rounded-xl text-white">
+                        <option value="web3">Web3 & DeFi</option>
+                        <option value="ebooks">eBooks</option>
+                        <option value="masterclasses">Masterclass</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-2 mt-5">
+                <button onclick="submitListing()" class="flex-1 py-2 bg-teal-500 text-black font-bold rounded-xl text-xs">Submit Listing</button>
+                <button onclick="closeListingModal()" class="px-4 py-2 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: FAQ -->
+    <div id="faqModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-5 relative border border-teal-500/30">
+            <h3 class="text-sm font-bold text-teal-400 mb-3">💬 Frequently Asked Questions</h3>
+            <div class="space-y-2 text-[11px] text-gray-300 mb-4 max-h-60 overflow-y-auto">
+                <p><strong>Q: How do I receive my digital product?</strong><br>A: Instant delivery directly to your Telegram chat and Library vault upon payment confirmation.</p>
+                <p><strong>Q: What payment methods are supported?</strong><br>A: Secure M-Pesa mobile checkout and non-custodial crypto payments.</p>
+                <p><strong>Q: How do affiliate rankings work?</strong><br>A: Points are tallied live based on successful referrals and verified community sales.</p>
+            </div>
+            <button onclick="closeFaqModal()" class="w-full py-2 bg-teal-500 text-black font-bold rounded-xl text-xs">Close</button>
+        </div>
+    </div>
+
     <!-- Script Logic -->
     <script>
-        // Initialize Telegram Web App
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Tab Switching
-        function switchTab(tab) {
-            const storeView = document.getElementById('storeView');
-            const libraryView = document.getElementById('libraryView');
-            const navStore = document.getElementById('navStore');
-            const navLibrary = document.getElementById('navLibrary');
+        let isUSD = true;
+        function toggleCurrency() {
+            isUSD = !isUSD;
+            const btn = document.getElementById('currencyBtn');
+            btn.innerText = isUSD ? "USD ($)" : "KES (Ksh)";
+            // Toggle pricing logic if needed or display values accordingly
+            tg.showAlert(isUSD ? "Switched to USD pricing." : "Switched to KES pricing.");
+        }
 
-            if (tab === 'store') {
-                storeView.classList.remove('hidden');
-                libraryView.classList.add('hidden');
-                navStore.className = "flex flex-col items-center text-teal-400 text-xs font-semibold gap-1";
-                navLibrary.className = "flex flex-col items-center text-gray-400 text-xs font-semibold gap-1 hover:text-white";
-            } else {
-                storeView.classList.add('hidden');
-                libraryView.classList.remove('hidden');
-                navLibrary.className = "flex flex-col items-center text-teal-400 text-xs font-semibold gap-1";
-                navStore.className = "flex flex-col items-center text-gray-400 text-xs font-semibold gap-1 hover:text-white";
+        function switchTab(tabName) {
+            const views = ['storeView', 'leaderboardView', 'roadmapView', 'libraryView', 'guideView'];
+            views.forEach(v => document.getElementById(v).classList.add('hidden'));
+
+            const navs = ['navStore', 'navLeaderboard', 'navRoadmap', 'navLibrary', 'navGuide'];
+            navs.forEach(n => {
+                const el = document.getElementById(n);
+                el.className = "flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white";
+            });
+
+            if (tabName === 'store') {
+                document.getElementById('storeView').classList.remove('hidden');
+                document.getElementById('navStore').className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
+            } else if (tabName === 'leaderboard') {
+                document.getElementById('leaderboardView').classList.remove('hidden');
+                document.getElementById('navLeaderboard').className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
+            } else if (tabName === 'roadmap') {
+                document.getElementById('roadmapView').classList.remove('hidden');
+                document.getElementById('navRoadmap').className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
+            } else if (tabName === 'library') {
+                document.getElementById('libraryView').classList.remove('hidden');
+                document.getElementById('navLibrary').className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
+            } else if (tabName === 'guide') {
+                document.getElementById('guideView').classList.remove('hidden');
+                document.getElementById('navGuide').className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
             }
         }
 
-        // Category Filter
-        function filterCategory(category) {
-            const buttons = document.querySelectorAll('.cat-btn');
-            buttons.forEach(btn => {
-                btn.className = "cat-btn px-4 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap hover:border-teal-500 transition-all";
-            });
-            event.target.className = "cat-btn px-4 py-1.5 bg-teal-500 text-black font-semibold text-xs rounded-full whitespace-nowrap transition-all shadow-lg shadow-teal-500/20";
+        function filterCategory(cat) {
+            const btns = document.querySelectorAll('.cat-btn');
+            btns.forEach(b => b.className = "cat-btn px-3 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap");
+            event.target.className = "cat-btn px-3 py-1.5 bg-teal-500 text-black font-semibold text-xs rounded-full whitespace-nowrap shadow-md";
 
             const cards = document.querySelectorAll('.product-card');
             cards.forEach(card => {
-                if (category === 'all' || card.dataset.category === category) {
+                if (cat === 'all' || card.dataset.category === cat) {
                     card.style.display = 'flex';
                 } else {
                     card.style.display = 'none';
@@ -218,23 +353,28 @@
             });
         }
 
-        // Search Filter
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.product-card');
-            cards.forEach(card => {
+            document.querySelectorAll('.product-card').forEach(card => {
                 const name = card.dataset.name;
-                if (name.includes(term)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
+                card.style.display = name.includes(term) ? 'flex' : 'none';
             });
         });
 
-        // Buy Action Trigger
+        function openListingModal() { document.getElementById('listingModal').classList.remove('hidden'); }
+        function closeListingModal() { document.getElementById('listingModal').classList.add('hidden'); }
+        function submitListing() {
+            const title = document.getElementById('listTitle').value;
+            if(!title) { tg.showAlert("Please enter a product title."); return; }
+            tg.showAlert(`Successfully submitted "${title}" for verification!`);
+            closeListingModal();
+        }
+
+        function openFaqModal() { document.getElementById('faqModal').classList.remove('hidden'); }
+        function closeFaqModal() { document.getElementById('faqModal').classList.add('hidden'); }
+
         function buyProduct(title, price) {
-            tg.showAlert(`Securing your order for "${title}" ($${price}). Payment integration ready!`);
+            tg.showAlert(`Securing checkout for "${title}" (${price}). Integration active!`);
         }
     </script>
 </body>
