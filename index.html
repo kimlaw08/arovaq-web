@@ -284,7 +284,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Supabase Client Initialization with your provided credentials
+        // Supabase Client Initialization
         const SUPABASE_URL = 'https://ftheyucrrfblvgsceitd.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_-Ju2MMTnlLQHZ6PQAoxBmw_nL9aSJ3R';
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -364,7 +364,6 @@
                 return;
             }
 
-            // Write submission directly into Supabase listings table
             const { error } = await _supabase
                 .from('listings')
                 .insert([{ title: title, price_usd: price, price_kes: price * 130, category: category, status: 'pending' }]);
