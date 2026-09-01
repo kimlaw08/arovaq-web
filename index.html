@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arovaq - Verified Value Marketplace</title>
+    <!-- Tailwind CSS CDN for fast, clean styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: #0b1315;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding-bottom: 80px;
+        }
+
+        /* Logo Shine Animation */
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        .logo-container::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.35) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg) translate(-100%, -100%);
+            animation: logoShine 3.5s infinite ease-in-out;
+        }
+        @keyframes logoShine {
+            0% { transform: rotate(30deg) translate(-100%, -100%); }
+            20% { transform: rotate(30deg) translate(100%, 100%); }
+            100% { transform: rotate(30deg) translate(100%, 100%); }
+        }
+
+        /* Custom Scrollbar for Categories */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen px-4 pt-4">
+
+    <!-- Header & Logo with Shine Animation -->
+    <header class="flex flex-col items-center mb-6 text-center">
+        <div class="logo-container mb-2 p-1 bg-teal-900/40 border border-teal-500/30">
+            <!-- Replace with your actual logo image filename if needed -->
+            <div class="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center font-bold text-black text-xl">A</div>
+        </div>
+        <h1 class="text-xl font-extrabold tracking-wide text-teal-400">AROVAQ</h1>
+        <p class="text-xs text-gray-400 tracking-widest uppercase">Verified Value Marketplace</p>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="relative mb-4">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search eBooks, masterclasses, templates..." 
+            class="w-full pl-10 pr-4 py-2.5 bg-gray-900/80 border border-gray-800 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 transition-colors">
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div class="flex gap-2 overflow-x-auto no-scrollbar mb-6 pb-1">
+        <button onclick="filterCategory('all')" class="cat-btn px-4 py-1.5 bg-teal-500 text-black font-semibold text-xs rounded-full whitespace-nowrap transition-all shadow-lg shadow-teal-500/20">🔥 All Assets</button>
+        <button onclick="filterCategory('web3')" class="cat-btn px-4 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap hover:border-teal-500 transition-all">🌐 Web3 & DeFi</button>
+        <button onclick="filterCategory('ebooks')" class="cat-btn px-4 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap hover:border-teal-500 transition-all">📚 eBooks</button>
+        <button onclick="filterCategory('masterclasses')" class="cat-btn px-4 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap hover:border-teal-500 transition-all">🎓 Masterclasses</button>
+        <button onclick="filterCategory('templates')" class="cat-btn px-4 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap hover:border-teal-500 transition-all">🛠️ Templates</button>
+    </div>
+
+    <!-- Main Store Content Container -->
+    <main id="storeView">
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-gray-300">Featured Curated Shelves</h2>
+            <span class="text-xs text-teal-400">4 items</span>
+        </div>
+
+        <!-- Product Cards Grid -->
+        <div id="productGrid" class="grid grid-cols-1 gap-3">
+            
+            <!-- Product 1 -->
+            <div class="product-card bg-gray-900/90 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/50 transition-all" data-category="web3" data-name="future express the decentralized age">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant</span>
+                        <span class="px-2 py-0.5 bg-teal-500/20 text-teal-400 text-[10px] font-bold rounded">🔥 Bestseller</span>
+                    </div>
+                    <h3 class="font-bold text-base text-white mb-1">Future Express: The Decentralized Age</h3>
+                    <p class="text-xs text-gray-400 mb-3">Comprehensive blueprint for scaling wealth and decentralized systems.</p>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-gray-800">
+                    <span class="text-teal-400 font-extrabold text-sm">$8 <span class="text-xs text-gray-400 font-normal">/ KES 1,040</span></span>
+                    <button onclick="buyProduct('Future Express', '8')" class="px-4 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-colors shadow-md">Buy Now</button>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card bg-gray-900/90 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/50 transition-all" data-category="masterclasses" data-name="creator economy blueprint 2026">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant</span>
+                        <span class="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-[10px] font-bold rounded">🎓 Masterclass</span>
+                    </div>
+                    <h3 class="font-bold text-base text-white mb-1">Creator Economy Blueprint 2026</h3>
+                    <p class="text-xs text-gray-400 mb-3">Monetize your audience using automated Telegram funnels and digital assets.</p>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-gray-800">
+                    <span class="text-teal-400 font-extrabold text-sm">$15 <span class="text-xs text-gray-400 font-normal">/ KES 1,950</span></span>
+                    <button onclick="buyProduct('Creator Economy Blueprint', '15')" class="px-4 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-colors shadow-md">Buy Now</button>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card bg-gray-900/90 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/50 transition-all" data-category="ebooks" data-name="alpha male positioning">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant</span>
+                        <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-bold rounded">📚 eBook</span>
+                    </div>
+                    <h3 class="font-bold text-base text-white mb-1">Alpha Male Positioning</h3>
+                    <p class="text-xs text-gray-400 mb-3">High-impact strategies for personal brand authority and elite networking.</p>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-gray-800">
+                    <span class="text-teal-400 font-extrabold text-sm">$10 <span class="text-xs text-gray-400 font-normal">/ KES 1,300</span></span>
+                    <button onclick="buyProduct('Alpha Male Positioning', '10')" class="px-4 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-colors shadow-md">Buy Now</button>
+                </div>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="product-card bg-gray-900/90 border border-gray-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/50 transition-all" data-category="templates" data-name="the digital rail system">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant</span>
+                        <span class="px-2 py-0.5 bg-green-500/20 text-green-400 text-[10px] font-bold rounded">🛠️ Template</span>
+                    </div>
+                    <h3 class="font-bold text-base text-white mb-1">The Digital Rail System</h3>
+                    <p class="text-xs text-gray-400 mb-3">Plug-and-play sales pipelines designed specifically for mobile digital product vendors.</p>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-gray-800">
+                    <span class="text-teal-400 font-extrabold text-sm">$25 <span class="text-xs text-gray-400 font-normal">/ KES 3,250</span></span>
+                    <button onclick="buyProduct('The Digital Rail System', '25')" class="px-4 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-colors shadow-md">Buy Now</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Library View (Hidden by default) -->
+    <main id="libraryView" class="hidden text-center py-12">
+        <div class="text-4xl mb-3">📦</div>
+        <h2 class="text-lg font-bold text-white mb-1">Your Digital Vault is Empty</h2>
+        <p class="text-xs text-gray-400 mb-6">Purchased assets and unlocked masterclasses will appear here instantly.</p>
+        <button onclick="switchTab('store')" class="px-6 py-2 bg-teal-500 text-black font-bold text-xs rounded-xl">Explore Marketplace</button>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#070b0c]/95 border-t border-gray-800 px-6 py-3 flex justify-around items-center backdrop-blur-md z-50">
+        <button onclick="switchTab('store')" id="navStore" class="flex flex-col items-center text-teal-400 text-xs font-semibold gap-1">
+            <span>🏠</span> Store
+        </button>
+        <button onclick="switchTab('library')" id="navLibrary" class="flex flex-col items-center text-gray-400 text-xs font-semibold gap-1 hover:text-white">
+            <span>📚</span> Library
+        </button>
+    </nav>
+
+    <!-- Script Logic -->
+    <script>
+        // Initialize Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Tab Switching
+        function switchTab(tab) {
+            const storeView = document.getElementById('storeView');
+            const libraryView = document.getElementById('libraryView');
+            const navStore = document.getElementById('navStore');
+            const navLibrary = document.getElementById('navLibrary');
+
+            if (tab === 'store') {
+                storeView.classList.remove('hidden');
+                libraryView.classList.add('hidden');
+                navStore.className = "flex flex-col items-center text-teal-400 text-xs font-semibold gap-1";
+                navLibrary.className = "flex flex-col items-center text-gray-400 text-xs font-semibold gap-1 hover:text-white";
+            } else {
+                storeView.classList.add('hidden');
+                libraryView.classList.remove('hidden');
+                navLibrary.className = "flex flex-col items-center text-teal-400 text-xs font-semibold gap-1";
+                navStore.className = "flex flex-col items-center text-gray-400 text-xs font-semibold gap-1 hover:text-white";
+            }
+        }
+
+        // Category Filter
+        function filterCategory(category) {
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => {
+                btn.className = "cat-btn px-4 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap hover:border-teal-500 transition-all";
+            });
+            event.target.className = "cat-btn px-4 py-1.5 bg-teal-500 text-black font-semibold text-xs rounded-full whitespace-nowrap transition-all shadow-lg shadow-teal-500/20";
+
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Search Filter
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                const name = card.dataset.name;
+                if (name.includes(term)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Buy Action Trigger
+        function buyProduct(title, price) {
+            tg.showAlert(`Securing your order for "${title}" ($${price}). Payment integration ready!`);
+        }
+    </script>
+</body>
+</html>
