@@ -263,6 +263,18 @@ bot.action('btn_list', async (ctx) => {
     await ctx.answerCbQuery();
     return ctx.reply('Type /list to start listing your product.');
 });
+// Handle /ref command to generate referral links
+bot.command('ref', async (ctx) => {
+    const userId = ctx.from.id;
+    const refLink = `https://t.me/Arovaq_bot?start=ref_${userId}`;
+    
+    await ctx.reply(
+        `🔗 **Your Arovaq Referral Link**\n\n` +
+        `Share this unique link with creators, sellers, and affiliates to expand your network:\n\n` +
+        `${refLink}\n\n` +
+        `Track your active network and earnings directly inside the Arovaq Mini App!`
+    );
+});
 
 // --- 5. LAUNCH BOT WITH WEBHOOK RESET ---
 bot.telegram.deleteWebhook({ drop_pending_updates: true }).then(() => {
