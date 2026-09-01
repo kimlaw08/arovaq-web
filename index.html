@@ -164,42 +164,56 @@
 
         <!-- LEADERBOARD VIEW -->
         <main id="leaderboardView" class="hidden space-y-4">
-            <h2 class="text-sm font-bold uppercase tracking-wider text-teal-400 text-center">🏆 Pre-Launch Network Rankings</h2>
-            <p class="text-[11px] text-gray-400 text-center mb-4">Top contributors driving verified value across the ecosystem.</p>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-teal-400 text-center">🏆 Ecosystem Leaderboard</h2>
+            <p class="text-[11px] text-gray-400 text-center mb-4">Top volume drivers and elite creators leading the platform.</p>
             
             <div class="grid grid-cols-2 gap-3">
                 <div class="glass-panel rounded-2xl p-3">
                     <h3 class="text-xs font-bold text-amber-400 mb-2 border-b border-gray-800 pb-1">⚡ Top Affiliates</h3>
                     <div class="space-y-2 text-xs">
-                        <div class="flex justify-between text-gray-300"><span>1. @kim_l</span> <span class="text-teal-400 font-bold">$1,420</span></div>
-                        <div class="flex justify-between text-gray-300"><span>2. @baze_ke</span> <span class="text-teal-400 font-bold">$980</span></div>
-                        <div class="flex justify-between text-gray-300"><span>3. @startups</span> <span class="text-teal-400 font-bold">$650</span></div>
+                        <div class="flex justify-between text-gray-300"><span>1. @kim_l</span> <span class="text-teal-400 font-bold">$2,450</span></div>
+                        <div class="flex justify-between text-gray-300"><span>2. @baze_ke</span> <span class="text-teal-400 font-bold">$1,820</span></div>
+                        <div class="flex justify-between text-gray-300"><span>3. @startups_hq</span> <span class="text-teal-400 font-bold">$1,150</span></div>
                     </div>
                 </div>
                 <div class="glass-panel rounded-2xl p-3">
                     <h3 class="text-xs font-bold text-purple-400 mb-2 border-b border-gray-800 pb-1">👑 Top Creators</h3>
                     <div class="space-y-2 text-xs">
-                        <div class="flex justify-between text-gray-300"><span>1. @alpha_edu</span> <span class="text-teal-400 font-bold">$2,890</span></div>
-                        <div class="flex justify-between text-gray-300"><span>2. @masterclass</span> <span class="text-teal-400 font-bold">$1,750</span></div>
-                        <div class="flex justify-between text-gray-300"><span>3. @vector_fx</span> <span class="text-teal-400 font-bold">$1,120</span></div>
+                        <div class="flex justify-between text-gray-300"><span>1. @alpha_edu</span> <span class="text-teal-400 font-bold">$4,200</span></div>
+                        <div class="flex justify-between text-gray-300"><span>2. @masterclass_ke</span> <span class="text-teal-400 font-bold">$3,100</span></div>
+                        <div class="flex justify-between text-gray-300"><span>3. @vector_fx</span> <span class="text-teal-400 font-bold">$2,150</span></div>
                     </div>
                 </div>
             </div>
         </main>
 
-        <!-- ROADMAP VIEW -->
-        <main id="roadmapView" class="hidden space-y-4">
+        <!-- PROFILE VIEW (Personal Referral Link & Stats) -->
+        <main id="profileView" class="hidden space-y-4">
             <div class="glass-panel rounded-2xl p-4 text-center">
-                <h2 class="text-sm font-bold text-teal-400 mb-1">🚀 Our Mission</h2>
-                <p class="text-xs text-gray-300 leading-relaxed">To build the premier decentralized, verified value marketplace on Telegram, connecting elite creators with global buyers securely and instantly.</p>
+                <div class="w-16 h-16 bg-teal-500/20 border border-teal-500/40 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold text-teal-400" id="userAvatar">👤</div>
+                <h2 class="text-sm font-bold text-white" id="userName">Arovaq Member</h2>
+                <p class="text-[11px] text-teal-400 mt-0.5">Verified Affiliate Tier 1</p>
             </div>
 
-            <div class="glass-panel rounded-2xl p-4">
-                <h2 class="text-sm font-bold text-amber-400 mb-3">🗺️ 2026 Roadmap</h2>
-                <div class="space-y-3 text-xs border-l-2 border-teal-500/40 pl-3">
-                    <div><span class="font-bold text-teal-400">Q1 2026:</span> Foundation & Mini App Launch, Curated Shelves & M-Pesa / Crypto Gateways.</div>
-                    <div><span class="font-bold text-teal-400">Q2 2026:</span> Automated Affiliate Payouts & Creator Dashboard Scaling.</div>
-                    <div><span class="font-bold text-teal-400">Q3 2026:</span> DAO Governance & Cross-Border Expansion across Africa & Global Hubs.</div>
+            <!-- Referral Link Box -->
+            <div class="glass-panel rounded-2xl p-4 space-y-3">
+                <h3 class="text-xs font-bold text-amber-400 flex items-center gap-1.5">🔗 Your Unique Referral Link</h3>
+                <p class="text-[11px] text-gray-400">Share this link with friends to earn instant affiliate commissions on every verified purchase.</p>
+                <div class="flex gap-2">
+                    <input type="text" id="referralLinkInput" readonly class="w-full p-2.5 bg-black/60 border border-gray-800 rounded-xl text-[11px] text-teal-300 select-all" value="https://t.me/arovaq_bot?start=ref_123456">
+                    <button onclick="copyReferralLink()" class="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl whitespace-nowrap active:scale-95 transition-all">Copy</button>
+                </div>
+            </div>
+
+            <!-- Personal Performance Stats -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="glass-panel rounded-xl p-3 text-center">
+                    <div class="text-[10px] text-gray-400">Total Referrals</div>
+                    <div class="text-sm font-bold text-white mt-1">14 Friends</div>
+                </div>
+                <div class="glass-panel rounded-xl p-3 text-center">
+                    <div class="text-[10px] text-gray-400">Earned Rewards</div>
+                    <div class="text-sm font-bold text-teal-400 mt-1">$142.50</div>
                 </div>
             </div>
         </main>
@@ -229,11 +243,11 @@
         💬 FAQ
     </button>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation Bar (5 Clean Tabs including Profile) -->
     <nav class="fixed bottom-0 left-0 right-0 glass-panel border-t border-gray-800 px-3 py-2.5 flex justify-around items-center z-30">
         <button onclick="switchTab('store')" id="navStore" class="flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5"><span>🏠</span> Store</button>
         <button onclick="switchTab('leaderboard')" id="navLeaderboard" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>🏆</span> Leaderboard</button>
-        <button onclick="switchTab('roadmap')" id="navRoadmap" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>🗺️</span> Roadmap</button>
+        <button onclick="switchTab('profile')" id="navProfile" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>👤</span> Profile</button>
         <button onclick="switchTab('library')" id="navLibrary" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>📚</span> Library</button>
         <button onclick="switchTab('guide')" id="navGuide" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>📜</span> T&C</button>
     </nav>
@@ -279,20 +293,29 @@
         </div>
     </div>
 
-    <!-- Script Logic with Supabase Live Integration -->
+    <!-- Script Logic -->
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Supabase Client Initialization
+        // Populate User Info & Referral Link dynamically from Telegram
+        window.addEventListener('DOMContentLoaded', () => {
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                if (user.first_name) document.getElementById('userName').innerText = `${user.first_name} ${user.last_name || ''}`;
+                const userId = user.id || '123456';
+                document.getElementById('referralLinkInput').value = `https://t.me/arovaq_bot?start=ref_${userId}`;
+            }
+            fetchLiveStats();
+        });
+
         const SUPABASE_URL = 'https://ftheyucrrfblvgsceitd.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_-Ju2MMTnlLQHZ6PQAoxBmw_nL9aSJ3R';
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Fetch live metrics from Supabase on load
         async function fetchLiveStats() {
             try {
-                const { data, error } = await _supabase.from('app_stats').select('*').single();
+                const { data } = await _supabase.from('app_stats').select('*').single();
                 if (data) {
                     if(data.volume) document.getElementById('statVolume').innerText = data.volume;
                     if(data.verified_assets) document.getElementById('statAssets').innerText = `${data.verified_assets}+`;
@@ -302,7 +325,14 @@
                 console.log("Using default fallback stats");
             }
         }
-        window.addEventListener('DOMContentLoaded', fetchLiveStats);
+
+        function copyReferralLink() {
+            const input = document.getElementById('referralLinkInput');
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value);
+            tg.showAlert("Referral link copied to clipboard! Share it with your friends.");
+        }
 
         let isUSD = true;
         function toggleCurrency() {
@@ -313,16 +343,16 @@
         }
 
         function switchTab(tabName) {
-            const views = ['storeView', 'leaderboardView', 'roadmapView', 'libraryView', 'guideView'];
+            const views = ['storeView', 'leaderboardView', 'profileView', 'libraryView', 'guideView'];
             views.forEach(v => document.getElementById(v).classList.add('hidden'));
 
-            const navs = ['navStore', 'navLeaderboard', 'navRoadmap', 'navLibrary', 'navGuide'];
+            const navs = ['navStore', 'navLeaderboard', 'navProfile', 'navLibrary', 'navGuide'];
             navs.forEach(n => {
                 document.getElementById(n).className = "flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white";
             });
 
-            const activeTabMap = { store: 'storeView', leaderboard: 'leaderboardView', roadmap: 'roadmapView', library: 'libraryView', guide: 'guideView' };
-            const activeNavMap = { store: 'navStore', leaderboard: 'navLeaderboard', roadmap: 'navRoadmap', library: 'navLibrary', guide: 'navGuide' };
+            const activeTabMap = { store: 'storeView', leaderboard: 'leaderboardView', profile: 'profileView', library: 'libraryView', guide: 'guideView' };
+            const activeNavMap = { store: 'navStore', leaderboard: 'navLeaderboard', profile: 'navProfile', library: 'navLibrary', guide: 'navGuide' };
 
             document.getElementById(activeTabMap[tabName]).classList.remove('hidden');
             document.getElementById(activeNavMap[tabName]).className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
