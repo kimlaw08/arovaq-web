@@ -6,6 +6,8 @@
     <title>Arovaq - Verified Value Marketplace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background-color: #070b0c;
@@ -61,13 +63,12 @@
     <header class="relative pt-4 pb-6 px-4 bg-gradient-to-b from-[#0e1719] to-[#070b0c] border-b border-teal-500/20 text-center">
         <!-- Milestone Ticker -->
         <div class="mb-3 inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full text-[11px] text-amber-400 font-medium">
-            🔥 Affiliate Milestone: <span class="font-bold text-white">14,250 / 50,000</span> Joined
+            🔥 Affiliate Milestone: <span id="milestoneCount" class="font-bold text-white">14,250 / 50,000</span> Joined
         </div>
 
         <!-- Brand Logo Container -->
         <div class="flex justify-center mb-2">
             <div class="logo-glow p-2 bg-gradient-to-br from-teal-900/60 to-black border border-teal-500/40 w-20 h-20 flex items-center justify-center">
-                <!-- Using stylized typography or image representation -->
                 <div class="text-center">
                     <span class="text-2xl font-black text-amber-400 tracking-tighter">A</span>
                     <div class="text-[9px] tracking-widest text-teal-300 font-bold">AROVAQ</div>
@@ -80,11 +81,11 @@
         <div class="grid grid-cols-3 gap-2 mt-4 max-w-sm mx-auto">
             <div class="glass-panel rounded-xl p-2 text-center">
                 <div class="text-[10px] text-gray-400">Volume</div>
-                <div class="text-xs font-bold text-teal-400">$48.2K</div>
+                <div id="statVolume" class="text-xs font-bold text-teal-400">$48.2K</div>
             </div>
             <div class="glass-panel rounded-xl p-2 text-center">
                 <div class="text-[10px] text-gray-400">Verified Assets</div>
-                <div class="text-xs font-bold text-amber-400">124+</div>
+                <div id="statAssets" class="text-xs font-bold text-amber-400">124+</div>
             </div>
             <div class="glass-panel rounded-xl p-2 text-center">
                 <div class="text-[10px] text-gray-400">Escrow</div>
@@ -93,12 +94,11 @@
         </div>
     </header>
 
-    <!-- Main Navigation Container -->
+    <!-- Main Content Container -->
     <div class="px-4 pt-4">
 
         <!-- STORE VIEW -->
         <main id="storeView" class="space-y-4">
-            <!-- Action Bar (Search & Listing Button) -->
             <div class="flex gap-2">
                 <div class="relative flex-1">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 text-xs">🔍</span>
@@ -187,7 +187,7 @@
             </div>
         </main>
 
-        <!-- MISSION & ROADMAP VIEW -->
+        <!-- ROADMAP VIEW -->
         <main id="roadmapView" class="hidden space-y-4">
             <div class="glass-panel rounded-2xl p-4 text-center">
                 <h2 class="text-sm font-bold text-teal-400 mb-1">🚀 Our Mission</h2>
@@ -197,15 +197,9 @@
             <div class="glass-panel rounded-2xl p-4">
                 <h2 class="text-sm font-bold text-amber-400 mb-3">🗺️ 2026 Roadmap</h2>
                 <div class="space-y-3 text-xs border-l-2 border-teal-500/40 pl-3">
-                    <div>
-                        <span class="font-bold text-teal-400">Q1 2026:</span> Foundation & Mini App Launch, Curated Shelves & M-Pesa / Crypto Gateways.
-                    </div>
-                    <div>
-                        <span class="font-bold text-teal-400">Q2 2026:</span> Automated Affiliate Payouts & Creator Dashboard Scaling.
-                    </div>
-                    <div>
-                        <span class="font-bold text-teal-400">Q3 2026:</span> DAO Governance & Cross-Border Expansion across Africa & Global Hubs.
-                    </div>
+                    <div><span class="font-bold text-teal-400">Q1 2026:</span> Foundation & Mini App Launch, Curated Shelves & M-Pesa / Crypto Gateways.</div>
+                    <div><span class="font-bold text-teal-400">Q2 2026:</span> Automated Affiliate Payouts & Creator Dashboard Scaling.</div>
+                    <div><span class="font-bold text-teal-400">Q3 2026:</span> DAO Governance & Cross-Border Expansion across Africa & Global Hubs.</div>
                 </div>
             </div>
         </main>
@@ -222,8 +216,8 @@
         <main id="guideView" class="hidden space-y-3">
             <div class="glass-panel rounded-2xl p-4">
                 <h2 class="text-sm font-bold text-teal-400 mb-2">📜 Terms & Compliance (T&C)</h2>
-                <p class="text-[11px] text-gray-300 leading-relaxed space-y-2">
-                    Arovaq operates as a non-custodial verified marketplace. All purchases are final and backed by instant digital fulfillment or escrow protection. Users must maintain compliance with local digital asset regulations. M-Pesa / Crypto gateway transactions are strictly direct between buyer and vendor.
+                <p class="text-[11px] text-gray-300 leading-relaxed">
+                    Arovaq operates as a non-custodial verified marketplace. All purchases are final and backed by instant digital fulfillment or escrow protection. Users must maintain compliance with local digital asset regulations.
                 </p>
             </div>
         </main>
@@ -237,21 +231,11 @@
 
     <!-- Bottom Navigation Bar -->
     <nav class="fixed bottom-0 left-0 right-0 glass-panel border-t border-gray-800 px-3 py-2.5 flex justify-around items-center z-30">
-        <button onclick="switchTab('store')" id="navStore" class="flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5">
-            <span>🏠</span> Store
-        </button>
-        <button onclick="switchTab('leaderboard')" id="navLeaderboard" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white">
-            <span>🏆</span> Leaderboard
-        </button>
-        <button onclick="switchTab('roadmap')" id="navRoadmap" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white">
-            <span>🗺️</span> Roadmap
-        </button>
-        <button onclick="switchTab('library')" id="navLibrary" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white">
-            <span>📚</span> Library
-        </button>
-        <button onclick="switchTab('guide')" id="navGuide" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white">
-            <span>📜</span> T&C
-        </button>
+        <button onclick="switchTab('store')" id="navStore" class="flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5"><span>🏠</span> Store</button>
+        <button onclick="switchTab('leaderboard')" id="navLeaderboard" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>🏆</span> Leaderboard</button>
+        <button onclick="switchTab('roadmap')" id="navRoadmap" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>🗺️</span> Roadmap</button>
+        <button onclick="switchTab('library')" id="navLibrary" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>📚</span> Library</button>
+        <button onclick="switchTab('guide')" id="navGuide" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>📜</span> T&C</button>
     </nav>
 
     <!-- MODAL: Listing Form -->
@@ -290,23 +274,41 @@
             <div class="space-y-2 text-[11px] text-gray-300 mb-4 max-h-60 overflow-y-auto">
                 <p><strong>Q: How do I receive my digital product?</strong><br>A: Instant delivery directly to your Telegram chat and Library vault upon payment confirmation.</p>
                 <p><strong>Q: What payment methods are supported?</strong><br>A: Secure M-Pesa mobile checkout and non-custodial crypto payments.</p>
-                <p><strong>Q: How do affiliate rankings work?</strong><br>A: Points are tallied live based on successful referrals and verified community sales.</p>
             </div>
             <button onclick="closeFaqModal()" class="w-full py-2 bg-teal-500 text-black font-bold rounded-xl text-xs">Close</button>
         </div>
     </div>
 
-    <!-- Script Logic -->
+    <!-- Script Logic with Supabase Live Integration -->
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+
+        // Supabase Client Initialization with your provided credentials
+        const SUPABASE_URL = 'https://ftheyucrrfblvgsceitd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_-Ju2MMTnlLQHZ6PQAoxBmw_nL9aSJ3R';
+        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Fetch live metrics from Supabase on load
+        async function fetchLiveStats() {
+            try {
+                const { data, error } = await _supabase.from('app_stats').select('*').single();
+                if (data) {
+                    if(data.volume) document.getElementById('statVolume').innerText = data.volume;
+                    if(data.verified_assets) document.getElementById('statAssets').innerText = `${data.verified_assets}+`;
+                    if(data.milestone_joined) document.getElementById('milestoneCount').innerText = `${data.milestone_joined.toLocaleString()} / 50,000`;
+                }
+            } catch (err) {
+                console.log("Using default fallback stats");
+            }
+        }
+        window.addEventListener('DOMContentLoaded', fetchLiveStats);
 
         let isUSD = true;
         function toggleCurrency() {
             isUSD = !isUSD;
             const btn = document.getElementById('currencyBtn');
             btn.innerText = isUSD ? "USD ($)" : "KES (Ksh)";
-            // Toggle pricing logic if needed or display values accordingly
             tg.showAlert(isUSD ? "Switched to USD pricing." : "Switched to KES pricing.");
         }
 
@@ -316,26 +318,14 @@
 
             const navs = ['navStore', 'navLeaderboard', 'navRoadmap', 'navLibrary', 'navGuide'];
             navs.forEach(n => {
-                const el = document.getElementById(n);
-                el.className = "flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white";
+                document.getElementById(n).className = "flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white";
             });
 
-            if (tabName === 'store') {
-                document.getElementById('storeView').classList.remove('hidden');
-                document.getElementById('navStore').className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
-            } else if (tabName === 'leaderboard') {
-                document.getElementById('leaderboardView').classList.remove('hidden');
-                document.getElementById('navLeaderboard').className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
-            } else if (tabName === 'roadmap') {
-                document.getElementById('roadmapView').classList.remove('hidden');
-                document.getElementById('navRoadmap').className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
-            } else if (tabName === 'library') {
-                document.getElementById('libraryView').classList.remove('hidden');
-                document.getElementById('navLibrary').className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
-            } else if (tabName === 'guide') {
-                document.getElementById('guideView').classList.remove('hidden');
-                document.getElementById('navGuide').className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
-            }
+            const activeTabMap = { store: 'storeView', leaderboard: 'leaderboardView', roadmap: 'roadmapView', library: 'libraryView', guide: 'guideView' };
+            const activeNavMap = { store: 'navStore', leaderboard: 'navLeaderboard', roadmap: 'navRoadmap', library: 'navLibrary', guide: 'navGuide' };
+
+            document.getElementById(activeTabMap[tabName]).classList.remove('hidden');
+            document.getElementById(activeNavMap[tabName]).className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
         }
 
         function filterCategory(cat) {
@@ -363,11 +353,28 @@
 
         function openListingModal() { document.getElementById('listingModal').classList.remove('hidden'); }
         function closeListingModal() { document.getElementById('listingModal').classList.add('hidden'); }
-        function submitListing() {
+        
+        async function submitListing() {
             const title = document.getElementById('listTitle').value;
-            if(!title) { tg.showAlert("Please enter a product title."); return; }
-            tg.showAlert(`Successfully submitted "${title}" for verification!`);
-            closeListingModal();
+            const price = document.getElementById('listPrice').value;
+            const category = document.getElementById('listCat').value;
+
+            if(!title || !price) {
+                tg.showAlert("Please fill in all fields.");
+                return;
+            }
+
+            // Write submission directly into Supabase listings table
+            const { error } = await _supabase
+                .from('listings')
+                .insert([{ title: title, price_usd: price, price_kes: price * 130, category: category, status: 'pending' }]);
+
+            if (error) {
+                tg.showAlert("Error saving to database. Check table setup.");
+            } else {
+                tg.showAlert(`Successfully submitted "${title}" to Supabase!`);
+                closeListingModal();
+            }
         }
 
         function openFaqModal() { document.getElementById('faqModal').classList.remove('hidden'); }
