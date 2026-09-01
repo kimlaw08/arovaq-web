@@ -187,22 +187,25 @@
             </div>
         </main>
 
-        <!-- PROFILE VIEW (Personal Referral Link & Stats) -->
+        <!-- PROFILE VIEW (Meta-Safe Referral Link & Bot Bridge) -->
         <main id="profileView" class="hidden space-y-4">
             <div class="glass-panel rounded-2xl p-4 text-center">
-                <div class="w-16 h-16 bg-teal-500/20 border border-teal-500/40 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold text-teal-400" id="userAvatar">👤</div>
+                <div class="w-16 h-16 bg-teal-500/20 border border-teal-500/40 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold text-teal-400">👤</div>
                 <h2 class="text-sm font-bold text-white" id="userName">Arovaq Member</h2>
                 <p class="text-[11px] text-teal-400 mt-0.5">Verified Affiliate Tier 1</p>
             </div>
 
-            <!-- Referral Link Box -->
+            <!-- Referral Link & Bridge Box -->
             <div class="glass-panel rounded-2xl p-4 space-y-3">
-                <h3 class="text-xs font-bold text-amber-400 flex items-center gap-1.5">🔗 Your Unique Referral Link</h3>
-                <p class="text-[11px] text-gray-400">Share this link with friends to earn instant affiliate commissions on every verified purchase.</p>
+                <h3 class="text-xs font-bold text-amber-400 flex items-center gap-1.5">🔗 Your Meta-Safe Referral Link</h3>
+                <p class="text-[11px] text-gray-400">Share this Vercel link safely on social media. Friends clicking it will be smoothly routed to your Telegram bot.</p>
                 <div class="flex gap-2">
-                    <input type="text" id="referralLinkInput" readonly class="w-full p-2.5 bg-black/60 border border-gray-800 rounded-xl text-[11px] text-teal-300 select-all" value="https://t.me/arovaq_bot?start=ref_123456">
+                    <input type="text" id="referralLinkInput" readonly class="w-full p-2.5 bg-black/60 border border-gray-800 rounded-xl text-[11px] text-teal-300 select-all" value="https://arovaq-portal-2026-v2.vercel.app/?ref=123456">
                     <button onclick="copyReferralLink()" class="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl whitespace-nowrap active:scale-95 transition-all">Copy</button>
                 </div>
+                <a id="telegramBridgeBtn" href="https://t.me/arovaq_bot?start=ref_123456" target="_blank" class="block w-full py-2.5 bg-gradient-to-r from-teal-500 to-emerald-500 text-black font-bold text-xs rounded-xl text-center shadow-lg shadow-teal-500/20 active:scale-95 transition-all">
+                    🚀 Open in Telegram Bot
+                </a>
             </div>
 
             <!-- Personal Performance Stats -->
@@ -243,7 +246,7 @@
         💬 FAQ
     </button>
 
-    <!-- Bottom Navigation Bar (5 Clean Tabs including Profile) -->
+    <!-- Bottom Navigation Bar (5 Clean Tabs) -->
     <nav class="fixed bottom-0 left-0 right-0 glass-panel border-t border-gray-800 px-3 py-2.5 flex justify-around items-center z-30">
         <button onclick="switchTab('store')" id="navStore" class="flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5"><span>🏠</span> Store</button>
         <button onclick="switchTab('leaderboard')" id="navLeaderboard" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>🏆</span> Leaderboard</button>
@@ -298,14 +301,28 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Populate User Info & Referral Link dynamically from Telegram
+        // Initialize User Profile & Meta-Safe Vercel Referral Links
         window.addEventListener('DOMContentLoaded', () => {
             const user = tg.initDataUnsafe?.user;
-            if (user) {
-                if (user.first_name) document.getElementById('userName').innerText = `${user.first_name} ${user.last_name || ''}`;
-                const userId = user.id || '123456';
-                document.getElementById('referralLinkInput').value = `https://t.me/arovaq_bot?start=ref_${userId}`;
+            let userId = '123456';
+
+            if (user && user.id) {
+                userId = user.id;
+                if (user.first_name) {
+                    document.getElementById('userName').innerText = `${user.first_name} ${user.last_name || ''}`;
+                }
             }
+
+            const vercelDomain = window.location.origin;
+            document.getElementById('referralLinkInput').value = `${vercelDomain}/?ref=${userId}`;
+            document.getElementById('telegramBridgeBtn').href = `https://t.me/arovaq_bot?start=ref_${userId}`;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const referredBy = urlParams.get('ref');
+            if (referredBy) {
+                localStorage.setItem('arovaq_referrer', referredBy);
+            }
+
             fetchLiveStats();
         });
 
@@ -331,7 +348,7 @@
             input.select();
             input.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(input.value);
-            tg.showAlert("Referral link copied to clipboard! Share it with your friends.");
+            tg.showAlert("Referral link copied! Safe to share on Meta & social media.");
         }
 
         let isUSD = true;
