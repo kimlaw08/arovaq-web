@@ -8,7 +8,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ftheyucrrfblvgsceitd.s
 const SUPABASE_ANON_KEY = process.env.SUPABASE_KEY || 'YOUR_SUPABASE_KEY_HERE';
 const MINIPAPP_URL = process.env.AROVAQ_MINI_PAPP_URL || 'https://arovaq-portal-2026.vercel.app/?v=2'; // Your live Vercel Mini App URL
 
-const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Minimal Express server to satisfy Render health checks and prevent port crashing
