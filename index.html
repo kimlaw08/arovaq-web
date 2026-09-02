@@ -153,7 +153,7 @@
             </div>
         </main>
 
-        <!-- 3. PROFILE VIEW (Referral Hub & Payout Account Setup) -->
+        <!-- 3. PROFILE VIEW (Referral Hub & Crypto Wallet Payout Setup) -->
         <main id="profileView" class="hidden space-y-4">
             <div class="glass-panel rounded-2xl p-4 text-center">
                 <div class="w-16 h-16 bg-teal-500/20 border border-teal-500/40 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold text-teal-400">👤</div>
@@ -171,13 +171,13 @@
                 </div>
             </div>
 
-            <!-- Payout Account Configuration Box -->
+            <!-- Crypto Wallet Payout Configuration Box -->
             <div class="glass-panel rounded-2xl p-4 space-y-3">
-                <h3 class="text-xs font-bold text-teal-400 flex items-center gap-1.5">💳 Payout Account Settings</h3>
-                <p class="text-[11px] text-gray-400">Specify your M-Pesa number or wallet where your sales revenue will be settled.</p>
+                <h3 class="text-xs font-bold text-teal-400 flex items-center gap-1.5">💳 Crypto Wallet Payout Settings</h3>
+                <p class="text-[11px] text-gray-400">Specify your EVM / USDT / TON wallet address where your earnings will be settled.</p>
                 <div class="space-y-2 text-xs">
-                    <input type="text" id="payoutAccountInput" placeholder="e.g. +254712345678 (M-Pesa)" class="w-full p-2.5 bg-black/60 border border-gray-800 rounded-xl text-white">
-                    <button onclick="savePayoutAccount()" class="w-full py-2 bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl text-xs">Save Payout Details</button>
+                    <input type="text" id="payoutAccountInput" placeholder="e.g. 0x... / Wallet Address" class="w-full p-2.5 bg-black/60 border border-gray-800 rounded-xl text-white">
+                    <button onclick="savePayoutAccount()" class="w-full py-2 bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl text-xs">Save Wallet Details</button>
                 </div>
             </div>
 
@@ -280,7 +280,7 @@
             <h3 class="text-sm font-bold text-teal-400 mb-3">💬 Frequently Asked Questions</h3>
             <div class="space-y-2 text-[11px] text-gray-300 mb-4 max-h-60 overflow-y-auto">
                 <p><strong>Q: How do I receive my digital product?</strong><br>A: Instant delivery directly to your Telegram chat and Library vault upon payment confirmation.</p>
-                <p><strong>Q: What payment methods are supported?</strong><br>A: Secure M-Pesa mobile checkout and non-custodial crypto payments.</p>
+                <p><strong>Q: What payment methods are supported?</strong><br>A: Secure crypto wallet settlements and non-custodial payouts.</p>
             </div>
             <button onclick="closeFaqModal()" class="w-full py-2 bg-teal-500 text-black font-bold rounded-xl text-xs">Close</button>
         </div>
@@ -293,7 +293,6 @@
             tg.expand();
         }
 
-        // Initialize Supabase Client
         const SUPABASE_URL = 'https://ftheyucrrfblvgsceitd.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_-Ju2MMTnlLQHZ6PQAoxBmw_nL9aSJ3R';
         const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -336,14 +335,14 @@
         function savePayoutAccount() {
             const payoutVal = document.getElementById('payoutAccountInput').value.trim();
             if (!payoutVal) {
-                alert("Please enter a valid M-Pesa number or payout account.");
+                alert("Please enter a valid crypto wallet address.");
                 return;
             }
             localStorage.setItem(`payout_${currentUserId}`, payoutVal);
             if (tg && tg.showAlert) {
-                tg.showAlert("Payout account details saved successfully!");
+                tg.showAlert("Crypto wallet details saved successfully!");
             } else {
-                alert("Payout account details saved successfully!");
+                alert("Crypto wallet details saved successfully!");
             }
         }
 
@@ -352,8 +351,8 @@
                 const { data } = await _supabase.from('app_stats').select('*').single();
                 if (data) {
                     if(data.volume) document.getElementById('statVolume').innerText = data.volume;
-                    if(data.verified_assets) document.getElementById('statAssets').innerText = `${data.verified_assets}+`;
-                    if(data.milestone_joined) document.getElementById('milestoneCount').innerText = `${data.milestone_joined.toLocaleString()} / 50,000`;
+                    if(data.verified_assets !== undefined) document.getElementById('statAssets').innerText = `${data.verified_assets}+`;
+                    if(data.milestone_joined !== undefined) document.getElementById('milestoneCount').innerText = `${data.milestone_joined.toLocaleString()} / 50,000`;
                 }
             } catch (err) {
                 console.log("Using default fallback stats");
