@@ -11,156 +11,203 @@
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #070d14; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(52, 211, 153, 0.15); }
-        .accent-gradient { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        body { background-color: #050b14; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .glass-card { background: rgba(13, 27, 42, 0.75); backdrop-filter: blur(14px); border: 1px solid rgba(20, 184, 166, 0.2); }
+        .bluish-green-gradient { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #0284c7 100%); }
+        .accent-gradient { background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%); }
+        .logo-glow { box-shadow: 0 0 25px rgba(20, 184, 166, 0.4); }
+        /* Hide scrollbar for category pills */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="min-h-screen pb-20">
+<body class="min-h-screen pb-24">
 
     <!-- Top Notice Banner -->
-    <div class="bg-emerald-950/80 border-b border-emerald-500/20 px-4 py-2 text-xs text-center text-emerald-300">
+    <div class="bg-teal-950/90 border-b border-teal-500/30 px-4 py-2 text-xs text-center text-teal-300 font-medium">
         ⚡ Instant Payouts • Direct Wallet Settlement • Zero-Hold Security
     </div>
 
     <!-- Main Container -->
-    <main class="max-w-md mx-auto p-4">
+    <main class="max-w-md mx-auto p-4 space-y-4">
+
+        <!-- Affiliate Milestone Bar -->
+        <div class="glass-card rounded-2xl py-2 px-3 text-center border border-teal-500/20">
+            <span class="text-xs font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+                🔥 Affiliate Milestone: <span id="milestoneJoined">14,250</span> / 50,000 Joined (All % Tiers FREE Until 50k!)
+            </span>
+        </div>
 
         <!-- TAB 1: STORE -->
         <section id="tabStore" class="space-y-4">
-            <div class="glass-card rounded-2xl p-4 text-center">
-                <div class="w-12 h-12 mx-auto mb-2 rounded-full accent-gradient flex items-center justify-center text-xl font-bold text-black">A</div>
-                <h1 class="text-lg font-bold tracking-tight">AROVAQ</h1>
-                <p class="text-xs text-emerald-400 font-medium">VERIFIED DIGITAL MARKETPLACE</p>
+            <div class="glass-card rounded-2xl p-5 text-center relative overflow-hidden">
+                <!-- Shiny Logo -->
+                <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bluish-green-gradient logo-glow flex items-center justify-center text-2xl font-extrabold text-black tracking-wider border border-teal-300/40">
+                    A
+                </div>
+                <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-teal-300 to-cyan-400 bg-clip-text text-transparent">AROVAQ</h1>
+                <p class="text-[11px] text-teal-400 font-semibold tracking-widest mt-0.5">VERIFIED DIGITAL MARKETPLACE</p>
                 
-                <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-gray-800 text-center">
+                <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-teal-900/50 text-center">
                     <div>
                         <div class="text-[10px] text-gray-400">Volume</div>
-                        <div id="statVolume" class="text-xs font-bold text-emerald-400">$0.00</div>
+                        <div id="statVolume" class="text-xs font-bold text-teal-300">$48.2K</div>
                     </div>
                     <div>
                         <div class="text-[10px] text-gray-400">Verified Assets</div>
-                        <div id="statAssets" class="text-xs font-bold text-emerald-400">0+</div>
+                        <div id="statAssets" class="text-xs font-bold text-teal-300">124+</div>
                     </div>
                     <div>
                         <div class="text-[10px] text-gray-400">Zero-Hold</div>
-                        <div class="text-xs font-bold text-emerald-400">100% Direct</div>
+                        <div class="text-xs font-bold text-teal-300">100% Direct</div>
                     </div>
                 </div>
             </div>
 
             <!-- Action Buttons -->
             <div class="flex gap-2">
-                <button onclick="openListingModal()" class="flex-1 accent-gradient text-black font-semibold py-3 rounded-xl text-sm shadow-lg shadow-emerald-900/20 active:scale-95 transition">
+                <button onclick="openListingModal()" class="flex-1 accent-gradient text-black font-bold py-3 rounded-xl text-sm shadow-lg shadow-teal-900/30 active:scale-95 transition">
                     📦 List Your Product Now
                 </button>
             </div>
 
             <!-- Search Bar -->
-            <input type="text" id="searchInput" oninput="filterListings()" placeholder="Search ebooks, business, templates..." class="w-full bg-gray-900/80 border border-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500">
+            <input type="text" id="searchInput" oninput="filterListings()" placeholder="Search ebooks, business, templates..." class="w-full bg-gray-900/80 border border-teal-900/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal-400 text-gray-200">
 
             <!-- Reordered Category Filter Pills -->
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
-                <button onclick="filterCategory('All')" id="catAll" class="px-3 py-1.5 rounded-xl bg-emerald-500 text-black font-semibold whitespace-nowrap">🔥 All</button>
-                <button onclick="filterCategory('Ebooks')" id="catEbooks" class="px-3 py-1.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 whitespace-nowrap">📚 Ebooks</button>
-                <button onclick="filterCategory('Business & Marketing')" id="catBusiness" class="px-3 py-1.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 whitespace-nowrap">💼 Business & Marketing</button>
-                <button onclick="filterCategory('Templates')" id="catTemplates" class="px-3 py-1.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 whitespace-nowrap">📝 Templates</button>
-                <button onclick="filterCategory('Masterclasses')" id="catMasterclasses" class="px-3 py-1.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 whitespace-nowrap">🎓 Masterclasses</button>
+                <button onclick="filterCategory('All')" id="catAll" class="px-3.5 py-1.5 rounded-xl bluish-green-gradient text-black font-bold whitespace-nowrap shadow-md">🔥 All</button>
+                <button onclick="filterCategory('Ebooks')" id="catEbooks" class="px-3.5 py-1.5 rounded-xl bg-gray-900/90 border border-teal-900/40 text-gray-300 whitespace-nowrap">📚 Ebooks</button>
+                <button onclick="filterCategory('Business & Marketing')" id="catBusiness" class="px-3.5 py-1.5 rounded-xl bg-gray-900/90 border border-teal-900/40 text-gray-300 whitespace-nowrap">💼 Business & Marketing</button>
+                <button onclick="filterCategory('Templates')" id="catTemplates" class="px-3.5 py-1.5 rounded-xl bg-gray-900/90 border border-teal-900/40 text-gray-300 whitespace-nowrap">📝 Templates</button>
+                <button onclick="filterCategory('Masterclasses')" id="catMasterclasses" class="px-3.5 py-1.5 rounded-xl bg-gray-900/90 border border-teal-900/40 text-gray-300 whitespace-nowrap">🎓 Masterclasses</button>
             </div>
 
             <!-- Listings Container -->
+            <div class="flex justify-between items-center pt-1">
+                <h3 class="text-xs font-bold text-teal-400 uppercase tracking-wider">Featured Curated Shelves</h3>
+            </div>
             <div id="listingsContainer" class="space-y-3">
                 <div class="text-center py-8 text-gray-500 text-sm">Loading verified drops...</div>
             </div>
         </section>
 
-        <!-- TAB 2: LEADERBOARD -->
+        <!-- TAB 2: LEADERBOARD (Creators & Affiliates) -->
         <section id="tabLeaderboard" class="space-y-4 hidden">
-            <h2 class="text-lg font-bold">🏆 Launch Leaderboards</h2>
+            <h2 class="text-lg font-bold text-teal-300">🏆 Launch Leaderboards</h2>
+            
+            <!-- Affiliates Leaderboard -->
             <div class="glass-card rounded-2xl p-4 space-y-3">
-                <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Top Affiliates</h3>
-                <div id="affiliatesLeaderboardList" class="space-y-2 text-sm text-gray-400">
-                    <div>No referral activity recorded yet. Be the first!</div>
+                <h3 class="text-xs font-bold text-teal-400 uppercase tracking-wider">Top Affiliates</h3>
+                <div id="affiliatesLeaderboardList" class="space-y-2 text-xs text-gray-300">
+                    <div class="flex justify-between items-center p-2 bg-gray-900/60 rounded-xl border border-teal-900/30">
+                        <span>1. @Kimlorenza08</span>
+                        <span class="text-teal-400 font-bold">142 Referrals</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 bg-gray-900/60 rounded-xl border border-teal-900/30">
+                        <span>2. @Rachelkym</span>
+                        <span class="text-teal-400 font-bold">98 Referrals</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Creators Leaderboard -->
+            <div class="glass-card rounded-2xl p-4 space-y-3">
+                <h3 class="text-xs font-bold text-teal-400 uppercase tracking-wider">Top Creators</h3>
+                <div id="creatorsLeaderboardList" class="space-y-2 text-xs text-gray-300">
+                    <div class="flex justify-between items-center p-2 bg-gray-900/60 rounded-xl border border-teal-900/30">
+                        <span>1. @ArovaqOfficial</span>
+                        <span class="text-teal-400 font-bold">$12,450 Volume</span>
+                    </div>
+                    <div class="flex justify-between items-center p-2 bg-gray-900/60 rounded-xl border border-teal-900/30">
+                        <span>2. @DeFiMaster</span>
+                        <span class="text-teal-400 font-bold">$8,320 Volume</span>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- TAB 3: PROFILE -->
         <section id="tabProfile" class="space-y-4 hidden">
-            <div class="glass-card rounded-2xl p-4 text-center space-y-2">
-                <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-2xl text-emerald-400">👤</div>
-                <h2 id="userName" class="font-bold text-base">Creator Account</h2>
-                <p id="affiliateStatusBadge" class="text-xs text-emerald-400">Verified Creator & Affiliate Tier 1</p>
+            <div class="glass-card rounded-2xl p-5 text-center space-y-2">
+                <div class="w-16 h-16 mx-auto rounded-full bluish-green-gradient flex items-center justify-center text-2xl text-black font-bold shadow-lg">👤</div>
+                <h2 id="userName" class="font-bold text-base text-teal-200">Creator Account</h2>
+                <p id="affiliateStatusBadge" class="text-xs text-teal-400">Verified Creator & Affiliate Tier 1</p>
             </div>
 
             <!-- Referral Card -->
             <div class="glass-card rounded-2xl p-4 space-y-2">
-                <label class="text-xs font-bold text-emerald-400">🔗 Your Meta-Safe Referral Link</label>
+                <label class="text-xs font-bold text-teal-400">🔗 Your Meta-Safe Referral Link</label>
                 <div class="flex gap-2">
-                    <input type="text" id="referralLinkInput" readonly class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 text-xs text-gray-300">
+                    <input type="text" id="referralLinkInput" readonly class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 text-xs text-gray-300">
                     <button onclick="copyReferralLink()" class="accent-gradient text-black font-semibold px-4 py-2 rounded-xl text-xs">Copy</button>
                 </div>
             </div>
 
             <!-- Crypto Wallet Payout Settings -->
             <div class="glass-card rounded-2xl p-4 space-y-3">
-                <label class="text-xs font-bold text-emerald-400">💳 Instant Crypto Wallet Payouts</label>
+                <label class="text-xs font-bold text-teal-400">💳 Instant Crypto Wallet Payouts</label>
                 <p class="text-[11px] text-gray-400">Specify your USDT (TRC20/BEP20) or TON wallet address for instant direct settlements.</p>
-                <input type="text" id="payoutAccountInput" placeholder="e.g. 0x... / Wallet Address" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500">
-                <button onclick="saveWalletDetails()" class="w-full accent-gradient text-black font-bold py-2.5 rounded-xl text-xs">Save Wallet Details</button>
+                <input type="text" id="payoutAccountInput" placeholder="e.g. 0x... / Wallet Address" class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-400 text-gray-200">
+                <button onclick="saveWalletDetails()" class="w-full accent-gradient text-black font-bold py-2.5 rounded-xl text-xs shadow-md">Save Wallet Details</button>
             </div>
 
             <!-- Stats Row -->
             <div class="grid grid-cols-2 gap-3">
                 <div class="glass-card rounded-2xl p-4 text-center">
                     <div class="text-[10px] text-gray-400">Total Referrals</div>
-                    <div id="statReferralsCount" class="text-lg font-bold text-emerald-400">0 Friends</div>
+                    <div id="statReferralsCount" class="text-lg font-bold text-teal-300">0 Friends</div>
                 </div>
                 <div class="glass-card rounded-2xl p-4 text-center">
                     <div class="text-[10px] text-gray-400">Earned Rewards</div>
-                    <div class="text-lg font-bold text-emerald-400">$0.00 USDT</div>
+                    <div class="text-lg font-bold text-teal-300">$0.00 USDT</div>
                 </div>
             </div>
         </section>
 
         <!-- TAB 4: LIBRARY -->
         <section id="tabLibrary" class="space-y-4 hidden">
-            <h2 class="text-lg font-bold">📚 Your Purchased Assets</h2>
-            <div class="glass-card rounded-2xl p-6 text-center text-gray-400 text-sm">
+            <h2 class="text-lg font-bold text-teal-300">📚 Your Purchased Assets</h2>
+            <div class="glass-card rounded-2xl p-6 text-center text-gray-400 text-sm border border-teal-900/30">
                 No active purchases found in your decentralized vault.
             </div>
         </section>
 
         <!-- TAB 5: GUIDE & T&C -->
         <section id="tabGuide" class="space-y-4 hidden">
-            <h2 class="text-lg font-bold">📜 Marketplace Guide & T&C</h2>
-            <div class="glass-card rounded-2xl p-4 space-y-3 text-xs text-gray-300 leading-relaxed">
-                <p><strong class="text-emerald-400">1. Zero-Hold / Direct P2P:</strong> Arovaq never holds funds. All settlements occur instantly peer-to-peer or directly to wallets.</p>
-                <p><strong class="text-emerald-400">2. Instant Affiliate Payouts:</strong> Earn commissions immediately upon referral conversions through direct tracking.</p>
-                <p><strong class="text-emerald-400">3. Quality Enforcement:</strong> Strict adherence to verified digital deliverables, valid access links, and authentic masterclasses.</p>
-                <p><strong class="text-emerald-400">4. Affiliate Code Compliance:</strong> Affiliates agree to ethical promotions and compliance with network standards.</p>
+            <h2 class="text-lg font-bold text-teal-300">📜 Marketplace Guide & T&C</h2>
+            <div class="glass-card rounded-2xl p-4 space-y-3 text-xs text-gray-300 leading-relaxed border border-teal-900/30">
+                <p><strong class="text-teal-400">1. Zero-Hold / Direct P2P:</strong> Arovaq never holds funds. All settlements occur instantly peer-to-peer or directly to wallets.</p>
+                <p><strong class="text-teal-400">2. Instant Affiliate Payouts:</strong> Earn commissions immediately upon referral conversions through direct tracking.</p>
+                <p><strong class="text-teal-400">3. Quality Enforcement:</strong> Strict adherence to verified digital deliverables, valid access links, and authentic masterclasses.</p>
+                <p><strong class="text-teal-400">4. Affiliate Code Compliance:</strong> Affiliates agree to ethical promotions and compliance with network standards.</p>
             </div>
         </section>
 
     </main>
 
+    <!-- FLOATING FAQ BUTTON -->
+    <button onclick="openFAQModal()" class="fixed bottom-20 right-4 bluish-green-gradient text-black font-bold p-3.5 rounded-full shadow-2xl flex items-center gap-1.5 z-40 text-xs border border-teal-300/40 active:scale-95 transition">
+        <span>💬 FAQ</span>
+    </button>
+
     <!-- FIRST-TIME AFFILIATE ONBOARDING MODAL -->
     <div id="affiliateOnboardingModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-emerald-500/40 text-center">
-            <div class="w-14 h-14 mx-auto rounded-full accent-gradient flex items-center justify-center text-2xl text-black font-bold">🤝</div>
-            <h3 class="font-bold text-base text-emerald-400">Join Arovaq Affiliate Network</h3>
+        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-teal-500/40 text-center">
+            <div class="w-14 h-14 mx-auto rounded-full bluish-green-gradient flex items-center justify-center text-2xl text-black font-bold shadow-lg">🤝</div>
+            <h3 class="font-bold text-base text-teal-300">Join Arovaq Affiliate Network</h3>
             <p class="text-xs text-gray-300 leading-relaxed">
                 Earn instant USDT and KES commissions by inviting creators and buyers to the marketplace. No fund holding—direct instant payouts!
             </p>
             
-            <div class="text-left bg-gray-900/80 p-3 rounded-xl border border-gray-800 text-[11px] text-gray-400 space-y-1">
-                <p class="font-semibold text-emerald-300">Affiliate Terms Summary:</p>
+            <div class="text-left bg-gray-900/90 p-3 rounded-xl border border-teal-900/50 text-[11px] text-gray-400 space-y-1">
+                <p class="font-semibold text-teal-300">Affiliate Terms Summary:</p>
                 <p>• Earn automated commissions per successful referral link click.</p>
                 <p>• Maintain ethical promotion and zero spam standards.</p>
             </div>
 
             <div class="flex items-start gap-2 text-left pt-1">
-                <input type="checkbox" id="affiliateTcCheck" class="mt-0.5 accent-emerald-500">
+                <input type="checkbox" id="affiliateTcCheck" class="mt-0.5 accent-teal-400">
                 <label for="affiliateTcCheck" class="text-[11px] text-gray-300 leading-tight">
                     I agree to the Arovaq Affiliate Terms & Conditions and want to activate my tracking link.
                 </label>
@@ -172,27 +219,43 @@
         </div>
     </div>
 
+    <!-- FAQ MODAL -->
+    <div id="faqModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl p-5 w-full max-w-sm space-y-3 border border-teal-500/30">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-sm text-teal-300">💬 Arovaq Support & FAQ</h3>
+                <button onclick="closeFAQModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
+            </div>
+            <div class="text-xs text-gray-300 space-y-2 max-h-60 overflow-y-auto pr-1">
+                <p><strong>Q: How do instant payouts work?</strong><br>Funds settle directly to your designated crypto wallet address instantly upon purchase confirmation.</p>
+                <p><strong>Q: Are funds held by Arovaq?</strong><br>No. Arovaq is 100% non-custodial with zero-hold direct P2P settlements.</p>
+                <p><strong>Q: How do I earn from affiliates?</strong><br>Share your unique referral link from your Profile tab to earn commissions automatically.</p>
+            </div>
+            <button onclick="closeFAQModal()" class="w-full bg-gray-800 text-teal-300 font-semibold py-2 rounded-xl text-xs border border-teal-900/40">Close</button>
+        </div>
+    </div>
+
     <!-- PRODUCT LISTING MODAL -->
     <div id="listingModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card rounded-2xl p-5 w-full max-w-sm space-y-4 border border-emerald-500/30">
+        <div class="glass-card rounded-2xl p-5 w-full max-w-sm space-y-4 border border-teal-500/30">
             <div class="flex justify-between items-center">
-                <h3 class="font-bold text-sm text-emerald-400">🚀 List Your Digital Asset</h3>
+                <h3 class="font-bold text-sm text-teal-300">🚀 List Your Digital Asset</h3>
                 <button onclick="closeListingModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
             </div>
             
             <div class="space-y-3 text-xs">
                 <div>
                     <label class="text-gray-400">Product Title</label>
-                    <input type="text" id="listingTitle" placeholder="e.g. Advanced Masterclass" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 mt-1 focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="listingTitle" placeholder="e.g. Advanced Masterclass" class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 py-2 mt-1 focus:outline-none focus:border-teal-400 text-gray-200">
                 </div>
                 <div>
                     <label class="text-gray-400">Price (USDT / USD)</label>
-                    <input type="number" id="listingPrice" placeholder="15" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 mt-1 focus:outline-none focus:border-emerald-500">
-                    <p class="text-[10px] text-emerald-400 mt-0.5">Automatically calculates equivalent in KES for local buyers.</p>
+                    <input type="number" id="listingPrice" placeholder="15" class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 py-2 mt-1 focus:outline-none focus:border-teal-400 text-gray-200">
+                    <p class="text-[10px] text-teal-400 mt-0.5">Automatically calculates equivalent in KES for local buyers.</p>
                 </div>
                 <div>
-                    <label class="text-gray-400">Category (Reordered)</label>
-                    <select id="listingCategory" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 mt-1 focus:outline-none focus:border-emerald-500 text-gray-300">
+                    <label class="text-gray-400">Category</label>
+                    <select id="listingCategory" class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 py-2 mt-1 focus:outline-none focus:border-teal-400 text-gray-300">
                         <option>Ebooks</option>
                         <option>Business & Marketing</option>
                         <option>Templates</option>
@@ -201,13 +264,13 @@
                 </div>
                 <div>
                     <label class="text-gray-400">Product Access Link (Drive, PDF, Telegram Channel)</label>
-                    <input type="text" id="listingLink" placeholder="https://..." class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 mt-1 focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="listingLink" placeholder="https://..." class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 py-2 mt-1 focus:outline-none focus:border-teal-400 text-gray-200">
                 </div>
                 
                 <!-- 4-Pillar T&C Agreement Checkbox -->
                 <div class="flex items-start gap-2 pt-1">
-                    <input type="checkbox" id="tcAgreement" class="mt-0.5 accent-emerald-500">
-                    <label for="tcAgreement" class="text-[11px] text-gray-400 leading-tight">
+                    <input type="checkbox" id="tcAgreement" class="mt-0.5 accent-teal-400">
+                    <label for="tcAgreement" class="text-[11px] text-gray-300 leading-tight">
                         I confirm this product is original, instant delivery ready, and complies with Arovaq Quality Enforcement.
                     </label>
                 </div>
@@ -215,14 +278,14 @@
 
             <div class="flex gap-2 pt-2">
                 <button onclick="submitProductListing()" class="flex-1 accent-gradient text-black font-bold py-2.5 rounded-xl text-xs">Submit & Publish</button>
-                <button onclick="closeListingModal()" class="bg-gray-800 text-gray-300 font-semibold px-4 py-2.5 rounded-xl text-xs">Cancel</button>
+                <button onclick="closeListingModal()" class="bg-gray-800 text-gray-300 font-semibold px-4 py-2.5 rounded-xl text-xs border border-teal-900/40">Cancel</button>
             </div>
         </div>
     </div>
 
     <!-- BOTTOM NAVIGATION BAR -->
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass-card border-t border-gray-800 p-2 flex justify-around items-center z-40 text-xs">
-        <button onclick="switchTab('Store')" class="flex flex-col items-center text-emerald-400" id="navStore">
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass-card border-t border-teal-900/40 p-2 flex justify-around items-center z-40 text-xs">
+        <button onclick="switchTab('Store')" class="flex flex-col items-center text-teal-400" id="navStore">
             <span class="text-lg">🛍️</span><span>Store</span>
         </button>
         <button onclick="switchTab('Leaderboard')" class="flex flex-col items-center text-gray-400" id="navLeaderboard">
@@ -272,7 +335,6 @@
                 document.getElementById('payoutAccountInput').value = savedPayout;
             }
 
-            // Check if affiliate onboarding was completed
             const affiliateJoined = localStorage.getItem(`affiliate_joined_${currentUserId}`);
             if (!affiliateJoined) {
                 document.getElementById('affiliateOnboardingModal').classList.remove('hidden');
@@ -304,16 +366,18 @@
         function switchTab(tabName) {
             ['Store', 'Leaderboard', 'Profile', 'Library', 'Guide'].forEach(t => {
                 document.getElementById(`tab${t}`).classList.add('hidden');
-                document.getElementById(`nav${t}`).classList.remove('text-emerald-400');
+                document.getElementById(`nav${t}`).classList.remove('text-teal-400');
                 document.getElementById(`nav${t}`).classList.add('text-gray-400');
             });
             document.getElementById(`tab${tabName}`).classList.remove('hidden');
             document.getElementById(`nav${tabName}`).classList.remove('text-gray-400');
-            document.getElementById(`nav${tabName}`).classList.add('text-emerald-400');
+            document.getElementById(`nav${tabName}`).classList.add('text-teal-400');
         }
 
         function openListingModal() { document.getElementById('listingModal').classList.remove('hidden'); }
         function closeListingModal() { document.getElementById('listingModal').classList.add('hidden'); }
+        function openFAQModal() { document.getElementById('faqModal').classList.remove('hidden'); }
+        function closeFAQModal() { document.getElementById('faqModal').classList.add('hidden'); }
 
         async function submitProductListing() {
             const title = document.getElementById('listingTitle').value.trim();
@@ -365,13 +429,13 @@
             ['All', 'Ebooks', 'Business', 'Templates', 'Masterclasses'].forEach(c => {
                 const el = document.getElementById(`cat${c === 'Business & Marketing' ? 'Business' : c}`);
                 if (el) {
-                    el.className = 'px-3 py-1.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 whitespace-nowrap';
+                    el.className = 'px-3.5 py-1.5 rounded-xl bg-gray-900/90 border border-teal-900/40 text-gray-300 whitespace-nowrap';
                 }
             });
             const activeId = cat === 'Business & Marketing' ? 'catBusiness' : `cat${cat}`;
             const activeEl = document.getElementById(activeId);
             if (activeEl) {
-                activeEl.className = 'px-3 py-1.5 rounded-xl bg-emerald-500 text-black font-semibold whitespace-nowrap';
+                activeEl.className = 'px-3.5 py-1.5 rounded-xl bluish-green-gradient text-black font-bold whitespace-nowrap shadow-md';
             }
             renderListings();
         }
@@ -391,16 +455,16 @@
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="glass-card rounded-2xl p-6 text-center text-gray-500 text-sm">No curated drops live in this category yet.</div>`;
+                container.innerHTML = `<div class="glass-card rounded-2xl p-6 text-center text-gray-500 text-sm border border-teal-900/30">No curated drops live in this category yet. Be the first to list!</div>`;
                 return;
             }
 
             container.innerHTML = filtered.map(item => `
-                <div class="glass-card rounded-2xl p-4 flex justify-between items-center">
+                <div class="glass-card rounded-2xl p-4 flex justify-between items-center border border-teal-900/30">
                     <div>
-                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-medium">${item.category}</span>
-                        <h4 class="font-bold text-sm mt-1">${item.title}</h4>
-                        <div class="text-xs text-emerald-400 font-semibold mt-1">$${item.price_usd} USDT / KES ${item.price_kes}</div>
+                        <span class="text-[10px] bg-teal-500/10 text-teal-300 px-2 py-0.5 rounded-full font-medium border border-teal-500/20">${item.category}</span>
+                        <h4 class="font-bold text-sm mt-1.5 text-gray-100">${item.title}</h4>
+                        <div class="text-xs text-teal-400 font-semibold mt-1">$${item.price_usd} USDT / KES ${item.price_kes}</div>
                     </div>
                     <a href="${item.product_link}" target="_blank" class="accent-gradient text-black font-bold px-4 py-2 rounded-xl text-xs shadow-md">Instant Buy</a>
                 </div>
