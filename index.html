@@ -2,13 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=https://arovaq-portal-2026-v2.vercel.app/">
     <title>Redirecting to Arovaq...</title>
+    <script>
+        // Dynamically redirect while keeping the referral query parameters (?ref=...)
+        const targetUrl = "https://arovaq-portal-2026-v2.vercel.app/" + window.location.search;
+        window.location.replace(targetUrl);
+    </script>
 </head>
 <body>
     <p>Redirecting to Arovaq Verified Marketplace...</p>
     <script>
-        window.location.href = "https://arovaq-portal-2026-v2.vercel.app/";
+        window.location.href = "https://arovaq-portal-2026-v2.vercel.app/" + window.location.search;
     </script>
 </body>
 </html>
