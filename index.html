@@ -2,17 +2,586 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Redirecting to Arovaq...</title>
-    <script>
-        // Dynamically redirect while keeping the referral query parameters (?ref=...)
-        const targetUrl = "https://arovaq-portal-2026-v2.vercel.app/" + window.location.search;
-        window.location.replace(targetUrl);
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arovaq - Verified Value Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #070b0c;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding-bottom: 90px;
+        }
+
+        /* Luxury Logo Shine Animation */
+        .logo-glow {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 0 25px rgba(20, 184, 166, 0.2);
+        }
+        .logo-glow::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(212, 175, 55, 0.3) 50%,
+                rgba(255, 255, 255, 100%)
+            );
+            transform: rotate(30deg) translate(-100%, -100%);
+            animation: logoShine 4s infinite ease-in-out;
+        }
+        @keyframes logoShine {
+            0% { transform: rotate(30deg) translate(-100%, -100%); }
+            25% { transform: rotate(30deg) translate(100%, 100%); }
+            100% { transform: rotate(30deg) translate(100%, 100%); }
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(13, 20, 22, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(20, 184, 166, 0.15);
+        }
+    </style>
 </head>
-<body>
-    <p>Redirecting to Arovaq Verified Marketplace...</p>
+<body class="min-h-screen">
+
+    <!-- Top Hero Section with Brand Logo & Milestone Banner -->
+    <header class="relative pt-4 pb-6 px-4 bg-gradient-to-b from-[#0e1719] to-[#070b0c] border-b border-teal-500/20 text-center">
+        <!-- Milestone Ticker -->
+        <div class="mb-3 inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full text-[11px] text-amber-400 font-medium">
+            🔥 Affiliate Milestone: <span id="milestoneCount" class="font-bold text-white">0 / 50,000</span> Joined
+        </div>
+
+        <!-- Brand Logo Container -->
+        <div class="flex justify-center mb-2">
+            <div class="logo-glow p-2 bg-gradient-to-br from-teal-900/60 to-black border border-teal-500/40 w-20 h-20 flex items-center justify-center">
+                <div class="text-center">
+                    <span class="text-2xl font-black text-amber-400 tracking-tighter">A</span>
+                    <div class="text-[9px] tracking-widest text-teal-300 font-bold">AROVAQ</div>
+                </div>
+            </div>
+        </div>
+        <p class="text-[11px] tracking-widest text-gray-400 uppercase font-semibold">Verified Digital Marketplace</p>
+
+        <!-- Live Stats Quick Bar -->
+        <div class="grid grid-cols-3 gap-2 mt-4 max-w-sm mx-auto">
+            <div class="glass-panel rounded-xl p-2 text-center">
+                <div class="text-[10px] text-gray-400">Volume</div>
+                <div id="statVolume" class="text-xs font-bold text-teal-400">$0.00</div>
+            </div>
+            <div class="glass-panel rounded-xl p-2 text-center">
+                <div class="text-[10px] text-gray-400">Verified Assets</div>
+                <div id="statAssets" class="text-xs font-bold text-amber-400">0+</div>
+            </div>
+            <div class="glass-panel rounded-xl p-2 text-center">
+                <div class="text-[10px] text-gray-400">Escrow</div>
+                <div class="text-xs font-bold text-emerald-400">100% Safe</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="px-4 pt-4">
+
+        <!-- 1. STORE VIEW -->
+        <main id="storeView" class="space-y-4">
+            <div class="flex gap-2">
+                <div class="relative flex-1">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 text-xs">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search masterclasses, ebooks..." 
+                        class="w-full pl-9 pr-3 py-2.5 bg-gray-900/90 border border-gray-800 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none focus:border-teal-500">
+                </div>
+                <button onclick="openListingModal()" class="px-3.5 py-2.5 bg-gradient-to-r from-teal-500 to-emerald-500 text-black font-bold text-xs rounded-xl shadow-lg shadow-teal-500/20 active:scale-95 transition-all">
+                    + List
+                </button>
+            </div>
+
+            <!-- Currency & Category Filters -->
+            <div class="flex justify-between items-center">
+                <div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
+                    <button onclick="filterCategory('all')" class="cat-btn px-3 py-1.5 bg-teal-500 text-black font-semibold text-xs rounded-full whitespace-nowrap shadow-md">🔥 All</button>
+                    <button onclick="filterCategory('web3')" class="cat-btn px-3 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap">🌐 Web3</button>
+                    <button onclick="filterCategory('ebooks')" class="cat-btn px-3 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap">📚 eBooks</button>
+                    <button onclick="filterCategory('masterclasses')" class="cat-btn px-3 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap">🎓 Classes</button>
+                </div>
+                <button onclick="toggleCurrency()" id="currencyBtn" class="px-2.5 py-1 bg-gray-800 border border-gray-700 text-teal-400 font-bold text-[10px] rounded-lg">USD ($)</button>
+            </div>
+
+            <!-- Dynamic Curated Shelves (Supabase Listings) -->
+            <div>
+                <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Featured Curated Shelves</h2>
+                <div id="productGrid" class="grid grid-cols-1 gap-3">
+                    <div class="text-gray-500 text-center py-6 text-xs">No active listings in Supabase yet. Be the first to list!</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 2. LEADERBOARD VIEW -->
+        <main id="leaderboardView" class="hidden space-y-4">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-teal-400 text-center">🏆 Ecosystem Leaderboard</h2>
+            <p class="text-[11px] text-gray-400 text-center mb-4">Live rankings synced directly from Supabase database.</p>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Top Affiliates Dynamic Box -->
+                <div class="glass-panel rounded-2xl p-3">
+                    <h3 class="text-xs font-bold text-amber-400 mb-2 border-b border-gray-800 pb-1">⚡ Top Affiliates</h3>
+                    <div id="affiliatesContainer" class="space-y-2 text-xs">
+                        <div class="text-gray-500 text-center py-4 text-[10px]">No live records yet.</div>
+                    </div>
+                </div>
+                <!-- Top Creators Dynamic Box -->
+                <div class="glass-panel rounded-2xl p-3">
+                    <h3 class="text-xs font-bold text-purple-400 mb-2 border-b border-gray-800 pb-1">👑 Top Creators</h3>
+                    <div id="creatorsContainer" class="space-y-2 text-xs">
+                        <div class="text-gray-500 text-center py-4 text-[10px]">No live records yet.</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 3. PROFILE VIEW (Referral Hub & Crypto Wallet Payout Setup) -->
+        <main id="profileView" class="hidden space-y-4">
+            <div class="glass-panel rounded-2xl p-4 text-center">
+                <div class="w-16 h-16 bg-teal-500/20 border border-teal-500/40 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold text-teal-400">👤</div>
+                <h2 class="text-sm font-bold text-white" id="userName">Arovaq Member</h2>
+                <p class="text-[11px] text-teal-400 mt-0.5">Verified Creator & Affiliate Tier 1</p>
+            </div>
+
+            <!-- Referral Link & Bridge Box -->
+            <div class="glass-panel rounded-2xl p-4 space-y-3">
+                <h3 class="text-xs font-bold text-amber-400 flex items-center gap-1.5">🔗 Your Meta-Safe Referral Link</h3>
+                <p class="text-[11px] text-gray-400">Share this link directly on social media. Friends clicking it will load your Mini App instantly.</p>
+                <div class="flex gap-2">
+                    <input type="text" id="referralLinkInput" readonly class="w-full p-2.5 bg-black/60 border border-gray-800 rounded-xl text-[11px] text-teal-300 select-all" value="">
+                    <button onclick="copyReferralLink()" class="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl whitespace-nowrap active:scale-95 transition-all">Copy</button>
+                </div>
+            </div>
+
+            <!-- Crypto Wallet Payout Configuration Box -->
+            <div class="glass-panel rounded-2xl p-4 space-y-3">
+                <h3 class="text-xs font-bold text-teal-400 flex items-center gap-1.5">💳 Crypto Wallet Payout Settings</h3>
+                <p class="text-[11px] text-gray-400">Specify your EVM / USDT / TON wallet address where your earnings will be settled.</p>
+                <div class="space-y-2 text-xs">
+                    <input type="text" id="payoutAccountInput" placeholder="e.g. 0x... / Wallet Address" class="w-full p-2.5 bg-black/60 border border-gray-800 rounded-xl text-white">
+                    <button onclick="savePayoutAccount()" class="w-full py-2 bg-teal-500 hover:bg-teal-400 text-black font-bold rounded-xl text-xs">Save Wallet Details</button>
+                </div>
+            </div>
+
+            <!-- Personal Performance Stats -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="glass-panel rounded-xl p-3 text-center">
+                    <div class="text-[10px] text-gray-400">Total Referrals</div>
+                    <div class="text-sm font-bold text-white mt-1" id="statReferralsCount">0 Friends</div>
+                </div>
+                <div class="glass-panel rounded-xl p-3 text-center">
+                    <div class="text-[10px] text-gray-400">Earned Rewards</div>
+                    <div class="text-sm font-bold text-teal-400 mt-1">$0.00</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 4. LIBRARY VIEW -->
+        <main id="libraryView" class="hidden text-center py-12">
+            <div class="text-4xl mb-3">📦</div>
+            <h2 class="text-sm font-bold text-white mb-1">Your Digital Vault is Empty</h2>
+            <p class="text-xs text-gray-400 mb-4">Purchased assets and unlocked masterclasses will appear here.</p>
+            <button onclick="switchTab('store')" class="px-5 py-2 bg-teal-500 text-black font-bold text-xs rounded-xl">Explore Store</button>
+        </main>
+
+        <!-- 5. GUIDE & T&C VIEW (Comprehensive Creator Compliance Framework) -->
+        <main id="guideView" class="hidden space-y-3">
+            <div class="glass-panel rounded-2xl p-4 space-y-3">
+                <h2 class="text-sm font-bold text-teal-400">📜 Creator & Affiliate Terms & Conditions</h2>
+                
+                <div class="space-y-2 text-[11px] text-gray-300 leading-relaxed">
+                    <p><strong>1. Non-Custodial Marketplace:</strong> Arovaq operates strictly as a verified digital value marketplace. The platform does not hold custody of user funds; transactions and settlements are executed transparently peer-to-peer or via direct payout routing.</p>
+                    
+                    <p><strong>2. Affiliate-Ready Compliance:</strong> All listed digital assets must be fully integrated and compatible with the Arovaq affiliate distribution network (supporting tiered reward structures such as 2%, 10%, 20%, 40%, or 50%).</p>
+                    
+                    <p><strong>3. Content Quality & Accountability:</strong> Creators bear full and sole responsibility for the digital files they provide. Uploading empty, corrupted, or broken assets is strictly prohibited. Repeated errors or failed delivery links will result in immediate product suspension and permanent removal from the marketplace.</p>
+                    
+                    <p><strong>4. Originality & Zero Plagiarism:</strong> Creators warrant that all listed works originate entirely from them or that they hold full commercial distribution rights. Plagiarized or unauthorized works will lead to immediate account termination and forfeiture of associated network standing.</p>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Floating FAQ Button -->
+    <button onclick="openFaqModal()" class="fixed bottom-20 right-4 bg-teal-500 hover:bg-teal-400 text-black font-bold p-3 rounded-full shadow-2xl flex items-center justify-center text-sm z-40 active:scale-95 transition-all">
+        💬 FAQ
+    </button>
+
+    <!-- Bottom Navigation Bar (5 Clean Tabs) -->
+    <nav class="fixed bottom-0 left-0 right-0 glass-panel border-t border-gray-800 px-3 py-2.5 flex justify-around items-center z-30">
+        <button onclick="switchTab('store')" id="navStore" class="flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5"><span>🏠</span> Store</button>
+        <button onclick="switchTab('leaderboard')" id="navLeaderboard" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>🏆</span> Leaderboard</button>
+        <button onclick="switchTab('profile')" id="navProfile" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>👤</span> Profile</button>
+        <button onclick="switchTab('library')" id="navLibrary" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>📚</span> Library</button>
+        <button onclick="switchTab('guide')" id="navGuide" class="flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white"><span>📜</span> T&C</button>
+    </nav>
+
+    <!-- MODAL: Listing Form -->
+    <div id="listingModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-5 relative border border-teal-500/35 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-sm font-bold text-teal-400 mb-3">🚀 List Your Digital Asset</h3>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="text-gray-400 block mb-1">Product Title</label>
+                    <input type="text" id="listTitle" placeholder="e.g. Advanced DeFi Masterclass" class="w-full p-2.5 bg-gray-900 border border-gray-800 rounded-xl text-white">
+                </div>
+                <div>
+                    <label class="text-gray-400 block mb-1">Price (USD)</label>
+                    <input type="number" id="listPrice" placeholder="10" class="w-full p-2.5 bg-gray-900 border border-gray-800 rounded-xl text-white">
+                </div>
+                <div>
+                    <label class="text-gray-400 block mb-1">Category</label>
+                    <select id="listCat" class="w-full p-2.5 bg-gray-900 border border-gray-800 rounded-xl text-white">
+                        <option value="web3">Web3 & DeFi</option>
+                        <option value="ebooks">eBooks</option>
+                        <option value="masterclasses">Masterclass</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-gray-400 block mb-1">Product Access Link (Google Drive, PDF, Channel)</label>
+                    <input type="text" id="listProductLink" placeholder="https://t.me/... or https://drive.google.com/..." class="w-full p-2.5 bg-gray-900 border border-gray-800 rounded-xl text-white">
+                </div>
+                <div class="flex items-start gap-2 pt-1">
+                    <input type="checkbox" id="tcCheck" class="mt-0.5 accent-teal-500">
+                    <label for="tcCheck" class="text-[11px] text-gray-300 leading-tight">
+                        I confirm this product is original, affiliate-ready, contains valid access links, and complies with Arovaq's Creator Terms & Conditions.
+                    </label>
+                </div>
+            </div>
+            <div class="flex gap-2 mt-5">
+                <button onclick="submitListing()" class="flex-1 py-2 bg-teal-500 text-black font-bold rounded-xl text-xs">Submit & Publish</button>
+                <button onclick="closeListingModal()" class="px-4 py-2 bg-gray-800 text-gray-300 font-bold rounded-xl text-xs">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: FAQ -->
+    <div id="faqModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-5 relative border border-teal-500/30">
+            <h3 class="text-sm font-bold text-teal-400 mb-3">💬 Frequently Asked Questions</h3>
+            <div class="space-y-2 text-[11px] text-gray-300 mb-4 max-h-60 overflow-y-auto">
+                <p><strong>Q: How do I receive my digital product?</strong><br>A: Instant delivery directly to your Telegram chat and Library vault upon payment confirmation.</p>
+                <p><strong>Q: What payment methods are supported?</strong><br>A: Secure crypto wallet settlements and non-custodial payouts.</p>
+            </div>
+            <button onclick="closeFaqModal()" class="w-full py-2 bg-teal-500 text-black font-bold rounded-xl text-xs">Close</button>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
     <script>
-        window.location.href = "https://arovaq-portal-2026-v2.vercel.app/" + window.location.search;
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.expand();
+        }
+
+        const SUPABASE_URL = 'https://ftheyucrrfblvgsceitd.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_-Ju2MMTnlLQHZ6PQAoxBmw_nL9aSJ3R';
+        const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUserId = '123456';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const user = tg?.initDataUnsafe?.user;
+
+            if (user && user.id) {
+                currentUserId = user.id;
+                if (user.first_name) {
+                    document.getElementById('userName').innerText = `${user.first_name} ${user.last_name || ''}`;
+                }
+            } else {
+                currentUserId = localStorage.getItem('arovaq_local_user') || 'user_' + Math.floor(Math.random() * 100000);
+                localStorage.setItem('arovaq_local_user', currentUserId);
+            }
+
+            const vercelDomain = window.location.origin;
+            document.getElementById('referralLinkInput').value = `${vercelDomain}/?ref=${currentUserId}`;
+
+            const savedPayout = localStorage.getItem(`payout_${currentUserId}`);
+            if (savedPayout) {
+                document.getElementById('payoutAccountInput').value = savedPayout;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const referredBy = urlParams.get('ref');
+            if (referredBy && referredBy !== String(currentUserId)) {
+                localStorage.setItem('arovaq_referrer', referredBy);
+                incrementReferralCount(referredBy);
+            }
+
+            fetchLiveStats();
+            fetchListingsData();
+            fetchLeaderboardData();
+        });
+
+        function savePayoutAccount() {
+            const payoutVal = document.getElementById('payoutAccountInput').value.trim();
+            if (!payoutVal) {
+                alert("Please enter a valid crypto wallet address.");
+                return;
+            }
+            localStorage.setItem(`payout_${currentUserId}`, payoutVal);
+            if (tg && tg.showAlert) {
+                tg.showAlert("Crypto wallet details saved successfully!");
+            } else {
+                alert("Crypto wallet details saved successfully!");
+            }
+        }
+
+        async function fetchLiveStats() {
+            try {
+                const { data } = await _supabase.from('app_stats').select('*').single();
+                if (data) {
+                    if(data.volume) document.getElementById('statVolume').innerText = data.volume;
+                    if(data.verified_assets !== undefined) document.getElementById('statAssets').innerText = `${data.verified_assets}+`;
+                    if(data.milestone_joined !== undefined) document.getElementById('milestoneCount').innerText = `${data.milestone_joined.toLocaleString()} / 50,000`;
+                }
+            } catch (err) {
+                console.log("Using default fallback stats");
+            }
+        }
+
+        async function fetchListingsData() {
+            try {
+                const { data: listings, error } = await _supabase
+                    .from('listings')
+                    .select('*')
+                    .order('id', { ascending: false });
+
+                const grid = document.getElementById('productGrid');
+                if (error || !listings || listings.length === 0) {
+                    grid.innerHTML = `<div class="text-gray-500 text-center py-6 text-xs">No active listings in Supabase yet. Be the first to list!</div>`;
+                    return;
+                }
+
+                let html = '';
+                listings.forEach(item => {
+                    const priceKes = item.price_kes || (item.price_usd * 130);
+                    html += `
+                        <div class="product-card glass-panel rounded-2xl p-4 flex flex-col justify-between hover:border-teal-500/40 transition-all" data-category="${item.category || 'web3'}" data-name="${item.title.toLowerCase()}">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded">⚡ Instant Access</span>
+                                    <span class="px-2 py-0.5 bg-teal-500/20 text-teal-400 text-[10px] font-bold rounded uppercase">${item.category || 'Asset'}</span>
+                                </div>
+                                <h3 class="font-bold text-sm text-white mb-1">${item.title}</h3>
+                                <p class="text-[11px] text-gray-400 mb-3">Verified digital asset published directly to the Arovaq ecosystem.</p>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-gray-800/80">
+                                <span class="price-tag text-teal-400 font-extrabold text-xs" data-usd="${item.price_usd}" data-kes="${priceKes}">$${item.price_usd} <span class="text-[10px] text-gray-400 font-normal">/ KES ${priceKes.toLocaleString()}</span></span>
+                                <button onclick="buyProduct('${item.title}', '$${item.price_usd}', '${item.product_link || '#'}')" class="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs rounded-xl transition-all">Buy Now</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                grid.innerHTML = html;
+            } catch (err) {
+                console.log("Listings fetch error:", err);
+            }
+        }
+
+        async function fetchLeaderboardData() {
+            try {
+                const { data: affiliates, error: affErr } = await _supabase
+                    .from('affiliates_leaderboard')
+                    .select('*')
+                    .order('volume', { ascending: false })
+                    .limit(5);
+
+                const affContainer = document.getElementById('affiliatesContainer');
+                if (affErr || !affiliates || affiliates.length === 0) {
+                    affContainer.innerHTML = `<div class="text-gray-500 text-center py-3 text-[10px]">No live records yet.</div>`;
+                } else {
+                    let affHtml = '';
+                    affiliates.forEach((item, index) => {
+                        affHtml += `<div class="flex justify-between text-gray-300"><span>${index + 1}. @${item.username || 'user'}</span> <span class="text-teal-400 font-bold">$${item.volume || 0}</span></div>`;
+                    });
+                    affContainer.innerHTML = affHtml;
+                }
+
+                const { data: creators, error: creatErr } = await _supabase
+                    .from('creators_leaderboard')
+                    .select('*')
+                    .order('volume', { ascending: false })
+                    .limit(5);
+
+                const creatContainer = document.getElementById('creatorsContainer');
+                if (creatErr || !creators || creators.length === 0) {
+                    creatContainer.innerHTML = `<div class="text-gray-500 text-center py-3 text-[10px]">No live records yet.</div>`;
+                } else {
+                    let creatHtml = '';
+                    creators.forEach((item, index) => {
+                        creatHtml += `<div class="flex justify-between text-gray-300"><span>${index + 1}. @${item.username || 'creator'}</span> <span class="text-purple-400 font-bold">$${item.volume || 0}</span></div>`;
+                    });
+                    creatContainer.innerHTML = creatHtml;
+                }
+            } catch (err) {
+                document.getElementById('affiliatesContainer').innerHTML = `<div class="text-gray-500 text-center py-3 text-[10px]">No live records yet.</div>`;
+                document.getElementById('creatorsContainer').innerHTML = `<div class="text-gray-500 text-center py-3 text-[10px]">No live records yet.</div>`;
+            }
+        }
+
+        async function incrementReferralCount(referrerId) {
+            try {
+                const { data } = await _supabase
+                    .from('affiliates_leaderboard')
+                    .select('volume')
+                    .eq('username', referrerId)
+                    .single();
+
+                if (data) {
+                    await _supabase
+                        .from('affiliates_leaderboard')
+                        .update({ volume: (data.volume || 0) + 1 })
+                        .eq('username', referrerId);
+                }
+            } catch (err) {
+                console.log("Referral tracking log sync pending.");
+            }
+        }
+
+        function copyReferralLink() {
+            const input = document.getElementById('referralLinkInput');
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value);
+            if (tg && tg.showAlert) {
+                tg.showAlert("Referral link copied! Safe to share on social media.");
+            } else {
+                alert("Referral link copied! Safe to share on social media.");
+            }
+        }
+
+        let isUSD = true;
+        function toggleCurrency() {
+            isUSD = !isUSD;
+            const btn = document.getElementById('currencyBtn');
+            btn.innerText = isUSD ? "USD ($)" : "KES (Ksh)";
+            if (tg && tg.showAlert) {
+                tg.showAlert(isUSD ? "Switched to USD pricing." : "Switched to KES pricing.");
+            }
+        }
+
+        function switchTab(tabName) {
+            const views = ['storeView', 'leaderboardView', 'profileView', 'libraryView', 'guideView'];
+            views.forEach(v => document.getElementById(v).classList.add('hidden'));
+
+            const navs = ['navStore', 'navLeaderboard', 'navProfile', 'navLibrary', 'navGuide'];
+            navs.forEach(n => {
+                document.getElementById(n).className = "flex flex-col items-center text-gray-400 text-[10px] font-semibold gap-0.5 hover:text-white";
+            });
+
+            const activeTabMap = { store: 'storeView', leaderboard: 'leaderboardView', profile: 'profileView', library: 'libraryView', guide: 'guideView' };
+            const activeNavMap = { store: 'navStore', leaderboard: 'navLeaderboard', profile: 'navProfile', library: 'navLibrary', guide: 'navGuide' };
+
+            document.getElementById(activeTabMap[tabName]).classList.remove('hidden');
+            document.getElementById(activeNavMap[tabName]).className = "flex flex-col items-center text-teal-400 text-[10px] font-semibold gap-0.5";
+        }
+
+        function filterCategory(cat) {
+            const btns = document.querySelectorAll('.cat-btn');
+            btns.forEach(b => b.className = "cat-btn px-3 py-1.5 bg-gray-900 border border-gray-800 text-gray-300 text-xs rounded-full whitespace-nowrap");
+            event.target.className = "cat-btn px-3 py-1.5 bg-teal-500 text-black font-semibold text-xs rounded-full whitespace-nowrap shadow-md";
+
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                if (cat === 'all' || card.dataset.category === cat) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.product-card').forEach(card => {
+                const name = card.dataset.name;
+                card.style.display = name.includes(term) ? 'flex' : 'none';
+            });
+        });
+
+        function openListingModal() { document.getElementById('listingModal').classList.remove('hidden'); }
+        function closeListingModal() { document.getElementById('listingModal').classList.add('hidden'); }
+        
+        async function submitListing() {
+            const title = document.getElementById('listTitle').value.trim();
+            const price = document.getElementById('listPrice').value.trim();
+            const category = document.getElementById('listCat').value;
+            const productLink = document.getElementById('listProductLink').value.trim();
+            const tcAgreed = document.getElementById('tcCheck').checked;
+
+            if(!title || !price || !productLink) {
+                if (tg && tg.showAlert) tg.showAlert("Please fill in all fields including your product access link.");
+                else alert("Please fill in all fields including your product access link.");
+                return;
+            }
+
+            if(!tcAgreed) {
+                if (tg && tg.showAlert) tg.showAlert("Please agree to the Terms & Conditions before publishing.");
+                else alert("Please agree to the Terms & Conditions before publishing.");
+                return;
+            }
+
+            const { error } = await _supabase
+                .from('listings')
+                .insert([{ 
+                    title: title, 
+                    price_usd: price, 
+                    price_kes: price * 130, 
+                    category: category, 
+                    product_link: productLink,
+                    creator_id: currentUserId,
+                    status: 'active' 
+                }]);
+
+            if (error) {
+                if (tg && tg.showAlert) tg.showAlert("Error saving to database. Check table setup.");
+                else alert("Error saving to database. Check table setup.");
+            } else {
+                closeListingModal();
+                switchTab('profile');
+                fetchListingsData();
+
+                if (tg && tg.showAlert) {
+                    tg.showAlert(`Successfully listed "${title}"! Your product is now live on the marketplace.`);
+                } else {
+                    alert(`Successfully listed "${title}"! Your product is now live on the marketplace.`);
+                }
+            }
+        }
+
+        function openFaqModal() { document.getElementById('faqModal').classList.remove('hidden'); }
+        function closeFaqModal() { document.getElementById('faqModal').classList.add('hidden'); }
+
+        function buyProduct(title, price, link) {
+            if (link && link !== '#') {
+                window.open(link, '_blank');
+            }
+            if (tg && tg.showAlert) {
+                tg.showAlert(`Securing checkout for "${title}" (${price}). Fulfillment link accessed!`);
+            } else {
+                alert(`Securing checkout for "${title}" (${price}). Fulfillment link accessed!`);
+            }
+        }
     </script>
 </body>
 </html>
