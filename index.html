@@ -50,11 +50,9 @@
             <div class="glass-card rounded-2xl p-5 text-center relative overflow-hidden">
                 <!-- Lively Shining Logo 'A' with Book Pages Watermark -->
                 <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bluish-green-gradient logo-shining relative flex items-center justify-center border border-teal-200/60">
-                    <!-- Open Book Watermark SVG in Background -->
                     <svg class="absolute w-12 h-12 text-black/20 pointer-events-none" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                     </svg>
-                    <!-- Main Logo Letter A -->
                     <span class="text-2xl font-black text-black tracking-wider relative z-10 drop-shadow-sm">A</span>
                 </div>
 
@@ -87,7 +85,7 @@
             <!-- Search Bar -->
             <input type="text" id="searchInput" oninput="filterListings()" placeholder="Search ebooks, business, templates..." class="w-full bg-gray-900/80 border border-teal-900/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-teal-400 text-gray-200">
 
-            <!-- Reordered Category Filter Pills -->
+            <!-- Category Filter Pills -->
             <div class="flex gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
                 <button onclick="filterCategory('All')" id="catAll" class="px-3.5 py-1.5 rounded-xl bluish-green-gradient text-black font-bold whitespace-nowrap shadow-md">🔥 All</button>
                 <button onclick="filterCategory('Ebooks')" id="catEbooks" class="px-3.5 py-1.5 rounded-xl bg-gray-900/90 border border-teal-900/40 text-gray-300 whitespace-nowrap">📚 Ebooks</button>
@@ -109,7 +107,6 @@
         <section id="tabLeaderboard" class="space-y-4 hidden">
             <h2 class="text-lg font-bold text-teal-300">🏆 Launch Leaderboards</h2>
             
-            <!-- Affiliates Leaderboard -->
             <div class="glass-card rounded-2xl p-4 space-y-3">
                 <h3 class="text-xs font-bold text-teal-400 uppercase tracking-wider">Top Affiliates</h3>
                 <div id="affiliatesLeaderboardList" class="space-y-2 text-xs text-gray-300">
@@ -117,7 +114,6 @@
                 </div>
             </div>
 
-            <!-- Creators Leaderboard -->
             <div class="glass-card rounded-2xl p-4 space-y-3">
                 <h3 class="text-xs font-bold text-teal-400 uppercase tracking-wider">Top Creators</h3>
                 <div id="creatorsLeaderboardList" class="space-y-2 text-xs text-gray-300">
@@ -144,7 +140,7 @@
                 </div>
             </div>
 
-            <!-- Logged-In User Dashboard (Hidden by default until authenticated) -->
+            <!-- Logged-In User Dashboard -->
             <div id="userDashboard" class="space-y-4 hidden">
                 <div class="glass-card rounded-2xl p-5 text-center space-y-2">
                     <div class="w-16 h-16 mx-auto rounded-full bluish-green-gradient flex items-center justify-center text-2xl text-black font-bold shadow-lg">👤</div>
@@ -153,7 +149,6 @@
                     <button onclick="handleSignOut()" class="text-[11px] text-red-400 underline pt-1">Sign Out</button>
                 </div>
 
-                <!-- Referral Card -->
                 <div class="glass-card rounded-2xl p-4 space-y-2">
                     <label class="text-xs font-bold text-teal-400">🔗 Your Permanent Referral Link</label>
                     <div class="flex gap-2">
@@ -162,7 +157,6 @@
                     </div>
                 </div>
 
-                <!-- Crypto Wallet Payout Settings -->
                 <div class="glass-card rounded-2xl p-4 space-y-3">
                     <label class="text-xs font-bold text-teal-400">💳 Instant Crypto Wallet Payouts</label>
                     <p class="text-[11px] text-gray-400">Specify your USDT (TRC20/BEP20) or TON wallet address for instant direct settlements.</p>
@@ -170,7 +164,6 @@
                     <button onclick="saveWalletDetails()" class="w-full accent-gradient text-black font-bold py-2.5 rounded-xl text-xs shadow-md">Save Wallet Details</button>
                 </div>
 
-                <!-- Stats Row -->
                 <div class="grid grid-cols-2 gap-3">
                     <div class="glass-card rounded-2xl p-4 text-center">
                         <div class="text-[10px] text-gray-400">Total Referrals</div>
@@ -303,14 +296,12 @@
         let currentSelectedCategory = 'All';
 
         window.addEventListener('DOMContentLoaded', async () => {
-            // Check active Supabase session
             const { data: { session } } = await _supabase.auth.getSession();
             if (session && session.user) {
                 currentUser = session.user;
                 renderUserDashboard();
             }
 
-            // Handle referral URL param
             const urlParams = new URLSearchParams(window.location.search);
             const referredBy = urlParams.get('ref');
             if (referredBy) {
@@ -321,7 +312,6 @@
             fetchLiveLeaderboards();
         });
 
-        // Supabase Email Sign Up
         async function handleEmailSignUp() {
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value.trim();
@@ -338,7 +328,6 @@
 
             if (data.user) {
                 currentUser = data.user;
-                // Register referral if present
                 const referrer = localStorage.getItem('arovaq_referrer');
                 if (referrer && referrer !== currentUser.id) {
                     await registerReferral(currentUser.id, referrer);
@@ -348,7 +337,6 @@
             }
         }
 
-        // Supabase Email Sign In
         async function handleEmailSignIn() {
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value.trim();
@@ -493,7 +481,7 @@
                     if (sortedAff.length > 0) {
                         affContainer.innerHTML = sortedAff.map(([id, count], index) => `
                             <div class="flex justify-between items-center p-2.5 bg-gray-900/60 rounded-xl border border-teal-900/30">
-                                <span class="text-gray-200">${index + 1}. User ID: ${id.substring(0, 6)}...</span>
+                                <span class="text-gray-200">${index + 1}. ID: ${id.substring(0, 6)}...</span>
                                 <span class="text-teal-400 font-bold">${count} Friend${count === 1 ? '' : 's'}</span>
                             </div>
                         `).join('');
@@ -518,7 +506,7 @@
                     if (sortedCreators.length > 0) {
                         creatorContainer.innerHTML = sortedCreators.map(([id, vol], index) => `
                             <div class="flex justify-between items-center p-2.5 bg-gray-900/60 rounded-xl border border-teal-900/30">
-                                <span class="text-gray-200">${index + 1}. Creator ID: ${id.substring(0, 6)}...</span>
+                                <span class="text-gray-200">${index + 1}. ID: ${id.substring(0, 6)}...</span>
                                 <span class="text-teal-400 font-bold">$${vol.toLocaleString()} Volume</span>
                             </div>
                         `).join('');
@@ -597,7 +585,6 @@
 
         async function registerReferral(userId, referrerId) {
             try {
-                await _supabase.from('affiliates മറ്റൊരുupsert'...); // standard upsert
                 await _supabase.from('affiliates').upsert([
                     { user_id: String(userId), referred_by: String(referrerId) }
                 ], { onConflict: 'user_id' });
