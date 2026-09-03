@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ArovaQ — Verified Digital Marketplace</title>
+    <title>Arovaq — Verified Digital Marketplace</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Telegram Web App SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -40,7 +38,7 @@
     <!-- Main Container -->
     <main class="max-w-md mx-auto p-4 space-y-4">
 
-        <!-- Real Supabase Affiliate Milestone Bar -->
+        <!-- Affiliate Milestone Bar -->
         <div class="glass-card rounded-2xl py-2 px-3 text-center border border-teal-500/30 shadow-lg">
             <span class="text-xs font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                 🔥 Affiliate Milestone: <span id="milestoneJoined">0</span> / 50,000 Joined (All % Tiers FREE Until 50k!)
@@ -52,7 +50,7 @@
             <div class="glass-card rounded-2xl p-5 text-center relative overflow-hidden">
                 <!-- Lively Shining Logo 'A' with Book Pages Watermark -->
                 <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bluish-green-gradient logo-shining relative flex items-center justify-center border border-teal-200/60">
-                    <!-- Subtle Open Book Watermark SVG in Background -->
+                    <!-- Open Book Watermark SVG in Background -->
                     <svg class="absolute w-12 h-12 text-black/20 pointer-events-none" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                     </svg>
@@ -107,7 +105,7 @@
             </div>
         </section>
 
-        <!-- TAB 2: LEADERBOARD (Live Supabase Data) -->
+        <!-- TAB 2: LEADERBOARD -->
         <section id="tabLeaderboard" class="space-y-4 hidden">
             <h2 class="text-lg font-bold text-teal-300">🏆 Launch Leaderboards</h2>
             
@@ -128,40 +126,60 @@
             </div>
         </section>
 
-        <!-- TAB 3: PROFILE -->
+        <!-- TAB 3: PROFILE & AUTH -->
         <section id="tabProfile" class="space-y-4 hidden">
-            <div class="glass-card rounded-2xl p-5 text-center space-y-2">
-                <div class="w-16 h-16 mx-auto rounded-full bluish-green-gradient flex items-center justify-center text-2xl text-black font-bold shadow-lg">👤</div>
-                <h2 id="userName" class="font-bold text-base text-teal-200">Creator Account</h2>
-                <p id="affiliateStatusBadge" class="text-xs text-teal-400">Verified Creator & Affiliate Tier 1</p>
-            </div>
-
-            <!-- Referral Card -->
-            <div class="glass-card rounded-2xl p-4 space-y-2">
-                <label class="text-xs font-bold text-teal-400">🔗 Your Meta-Safe Referral Link</label>
-                <div class="flex gap-2">
-                    <input type="text" id="referralLinkInput" readonly class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 text-xs text-gray-300">
-                    <button onclick="copyReferralLink()" class="accent-gradient text-black font-semibold px-4 py-2 rounded-xl text-xs">Copy</button>
+            <div id="authContainer" class="glass-card rounded-2xl p-5 space-y-4">
+                <div class="text-center space-y-1">
+                    <div class="w-14 h-14 mx-auto rounded-full bluish-green-gradient flex items-center justify-center text-xl text-black font-bold shadow-lg">🔐</div>
+                    <h2 class="font-bold text-base text-teal-200">Creator & Affiliate Portal</h2>
+                    <p class="text-xs text-gray-400">Sign in with your email to access your permanent dashboard & referral link.</p>
+                </div>
+                <div class="space-y-3 text-xs">
+                    <input type="email" id="authEmail" placeholder="Enter your email address" class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3.5 py-3 text-xs focus:outline-none focus:border-teal-400 text-gray-200">
+                    <input type="password" id="authPassword" placeholder="Enter password" class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3.5 py-3 text-xs focus:outline-none focus:border-teal-400 text-gray-200">
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="handleEmailSignIn()" class="flex-1 accent-gradient text-black font-bold py-2.5 rounded-xl text-xs shadow-md">Sign In</button>
+                        <button onclick="handleEmailSignUp()" class="flex-1 bg-gray-800 text-teal-300 font-semibold py-2.5 rounded-xl text-xs border border-teal-900/40">Register</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Crypto Wallet Payout Settings -->
-            <div class="glass-card rounded-2xl p-4 space-y-3">
-                <label class="text-xs font-bold text-teal-400">💳 Instant Crypto Wallet Payouts</label>
-                <p class="text-[11px] text-gray-400">Specify your USDT (TRC20/BEP20) or TON wallet address for instant direct settlements.</p>
-                <input type="text" id="payoutAccountInput" placeholder="e.g. 0x... / Wallet Address" class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-400 text-gray-200">
-                <button onclick="saveWalletDetails()" class="w-full accent-gradient text-black font-bold py-2.5 rounded-xl text-xs shadow-md">Save Wallet Details</button>
-            </div>
-
-            <!-- Stats Row -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="glass-card rounded-2xl p-4 text-center">
-                    <div class="text-[10px] text-gray-400">Total Referrals</div>
-                    <div id="statReferralsCount" class="text-lg font-bold text-teal-300">0 Friends</div>
+            <!-- Logged-In User Dashboard (Hidden by default until authenticated) -->
+            <div id="userDashboard" class="space-y-4 hidden">
+                <div class="glass-card rounded-2xl p-5 text-center space-y-2">
+                    <div class="w-16 h-16 mx-auto rounded-full bluish-green-gradient flex items-center justify-center text-2xl text-black font-bold shadow-lg">👤</div>
+                    <h2 id="userEmailDisplay" class="font-bold text-base text-teal-200"></h2>
+                    <p class="text-xs text-teal-400">Verified Creator & Affiliate Account</p>
+                    <button onclick="handleSignOut()" class="text-[11px] text-red-400 underline pt-1">Sign Out</button>
                 </div>
-                <div class="glass-card rounded-2xl p-4 text-center">
-                    <div class="text-[10px] text-gray-400">Earned Rewards</div>
-                    <div class="text-lg font-bold text-teal-300">$0.00 USDT</div>
+
+                <!-- Referral Card -->
+                <div class="glass-card rounded-2xl p-4 space-y-2">
+                    <label class="text-xs font-bold text-teal-400">🔗 Your Permanent Referral Link</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="referralLinkInput" readonly class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 text-xs text-gray-300">
+                        <button onclick="copyReferralLink()" class="accent-gradient text-black font-semibold px-4 py-2 rounded-xl text-xs">Copy</button>
+                    </div>
+                </div>
+
+                <!-- Crypto Wallet Payout Settings -->
+                <div class="glass-card rounded-2xl p-4 space-y-3">
+                    <label class="text-xs font-bold text-teal-400">💳 Instant Crypto Wallet Payouts</label>
+                    <p class="text-[11px] text-gray-400">Specify your USDT (TRC20/BEP20) or TON wallet address for instant direct settlements.</p>
+                    <input type="text" id="payoutAccountInput" placeholder="e.g. 0x... / Wallet Address" class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-400 text-gray-200">
+                    <button onclick="saveWalletDetails()" class="w-full accent-gradient text-black font-bold py-2.5 rounded-xl text-xs shadow-md">Save Wallet Details</button>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="glass-card rounded-2xl p-4 text-center">
+                        <div class="text-[10px] text-gray-400">Total Referrals</div>
+                        <div id="statReferralsCount" class="text-lg font-bold text-teal-300">0 Friends</div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-4 text-center">
+                        <div class="text-[10px] text-gray-400">Earned Rewards</div>
+                        <div class="text-lg font-bold text-teal-300">$0.00 USDT</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -192,34 +210,6 @@
         <span>💬 FAQ</span>
     </button>
 
-    <!-- FIRST-TIME AFFILIATE ONBOARDING MODAL -->
-    <div id="affiliateOnboardingModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-card rounded-2xl p-6 w-full max-w-sm space-y-4 border border-teal-500/40 text-center">
-            <div class="w-14 h-14 mx-auto rounded-full bluish-green-gradient flex items-center justify-center text-2xl text-black font-bold shadow-lg">🤝</div>
-            <h3 class="font-bold text-base text-teal-300">Join Arovaq Affiliate Network</h3>
-            <p class="text-xs text-gray-300 leading-relaxed">
-                Earn instant USDT and KES commissions by inviting creators and buyers to the marketplace. No fund holding—direct instant payouts!
-            </p>
-            
-            <div class="text-left bg-gray-900/90 p-3 rounded-xl border border-teal-900/50 text-[11px] text-gray-400 space-y-1">
-                <p class="font-semibold text-teal-300">Affiliate Terms Summary:</p>
-                <p>• Earn automated commissions per successful referral link click.</p>
-                <p>• Maintain ethical promotion and zero spam standards.</p>
-            </div>
-
-            <div class="flex items-start gap-2 text-left pt-1">
-                <input type="checkbox" id="affiliateTcCheck" class="mt-0.5 accent-teal-400">
-                <label for="affiliateTcCheck" class="text-[11px] text-gray-300 leading-tight">
-                    I agree to the Arovaq Affiliate Terms & Conditions and want to activate my tracking link.
-                </label>
-            </div>
-
-            <button onclick="acceptAffiliateOnboarding()" class="w-full accent-gradient text-black font-bold py-3 rounded-xl text-sm shadow-lg">
-                🚀 Activate Affiliate Status
-            </button>
-        </div>
-    </div>
-
     <!-- FAQ MODAL -->
     <div id="faqModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="glass-card rounded-2xl p-5 w-full max-w-sm space-y-3 border border-teal-500/30">
@@ -230,7 +220,7 @@
             <div class="text-xs text-gray-300 space-y-2 max-h-60 overflow-y-auto pr-1">
                 <p><strong>Q: How do instant payouts work?</strong><br>Funds settle directly to your designated crypto wallet address instantly upon purchase confirmation.</p>
                 <p><strong>Q: Are funds held by Arovaq?</strong><br>No. Arovaq is 100% non-custodial with zero-hold direct P2P settlements.</p>
-                <p><strong>Q: How do I earn from affiliates?</strong><br>Share your unique referral link from your Profile tab to earn commissions automatically.</p>
+                <p><strong>Q: How do I earn from affiliates?</strong><br>Share your unique email referral link from your Profile tab to earn commissions automatically.</p>
             </div>
             <button onclick="closeFAQModal()" class="w-full bg-gray-800 text-teal-300 font-semibold py-2 rounded-xl text-xs border border-teal-900/40">Close</button>
         </div>
@@ -264,11 +254,10 @@
                     </select>
                 </div>
                 <div>
-                    <label class="text-gray-400">Product Access Link (Drive, PDF, Telegram Channel)</label>
+                    <label class="text-gray-400">Product Access Link (Drive, PDF, etc.)</label>
                     <input type="text" id="listingLink" placeholder="https://..." class="w-full bg-gray-900 border border-teal-900/50 rounded-xl px-3 py-2 mt-1 focus:outline-none focus:border-teal-400 text-gray-200">
                 </div>
                 
-                <!-- 4-Pillar T&C Agreement Checkbox -->
                 <div class="flex items-start gap-2 pt-1">
                     <input type="checkbox" id="tcAgreement" class="mt-0.5 accent-teal-400">
                     <label for="tcAgreement" class="text-[11px] text-gray-300 leading-tight">
@@ -309,60 +298,103 @@
         const SUPABASE_KEY = 'sb_publishable_-Ju2MMTnlLQHZ6PQAoxBmw_nL9aSJ3R';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const tg = window.Telegram?.WebApp;
-        if (tg) { tg.expand(); }
-
-        let currentUserId = 'guest_' + Math.floor(Math.random() * 100000);
+        let currentUser = null;
         let allListingsData = [];
         let currentSelectedCategory = 'All';
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const user = tg?.initDataUnsafe?.user;
-            if (user && user.id) {
-                currentUserId = String(user.id);
-                if (user.first_name) {
-                    document.getElementById('userName').innerText = `${user.first_name} ${user.last_name || ''}`;
-                }
-            } else {
-                currentUserId = localStorage.getItem('arovaq_local_user') || 'user_' + Math.floor(Math.random() * 100000);
-                localStorage.setItem('arovaq_local_user', currentUserId);
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Check active Supabase session
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (session && session.user) {
+                currentUser = session.user;
+                renderUserDashboard();
             }
 
-            const vercelDomain = window.location.origin;
-            document.getElementById('referralLinkInput').value = `${vercelDomain}/?ref=${currentUserId}`;
+            // Handle referral URL param
+            const urlParams = new URLSearchParams(window.location.search);
+            const referredBy = urlParams.get('ref');
+            if (referredBy) {
+                localStorage.setItem('arovaq_referrer', referredBy);
+            }
 
-            const savedPayout = localStorage.getItem(`payout_${currentUserId}`);
+            fetchListingsData();
+            fetchLiveLeaderboards();
+        });
+
+        // Supabase Email Sign Up
+        async function handleEmailSignUp() {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+
+            const { data, error } = await _supabase.auth.signUp({ email, password });
+            if (error) {
+                alert('Sign up failed: ' + error.message);
+                return;
+            }
+
+            if (data.user) {
+                currentUser = data.user;
+                // Register referral if present
+                const referrer = localStorage.getItem('arovaq_referrer');
+                if (referrer && referrer !== currentUser.id) {
+                    await registerReferral(currentUser.id, referrer);
+                }
+                alert('Account created successfully!');
+                renderUserDashboard();
+            }
+        }
+
+        // Supabase Email Sign In
+        async function handleEmailSignIn() {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                alert('Sign in failed: ' + error.message);
+                return;
+            }
+
+            if (data.user) {
+                currentUser = data.user;
+                renderUserDashboard();
+                alert('Signed in successfully!');
+            }
+        }
+
+        async function handleSignOut() {
+            await _supabase.auth.signOut();
+            currentUser = null;
+            document.getElementById('authContainer').classList.remove('hidden');
+            document.getElementById('userDashboard').classList.add('hidden');
+            document.getElementById('authEmail').value = '';
+            document.getElementById('authPassword').value = '';
+            alert('Signed out successfully.');
+        }
+
+        function renderUserDashboard() {
+            if (!currentUser) return;
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('userDashboard').classList.remove('hidden');
+            document.getElementById('userEmailDisplay').innerText = currentUser.email;
+
+            const vercelDomain = window.location.origin;
+            document.getElementById('referralLinkInput').value = `${vercelDomain}/?ref=${currentUser.id}`;
+
+            const savedPayout = localStorage.getItem(`payout_${currentUser.id}`);
             if (savedPayout) {
                 document.getElementById('payoutAccountInput').value = savedPayout;
             }
 
-            const affiliateJoined = localStorage.getItem(`affiliate_joined_${currentUserId}`);
-            if (!affiliateJoined) {
-                document.getElementById('affiliateOnboardingModal').classList.remove('hidden');
-            }
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const referredBy = urlParams.get('ref');
-            if (referredBy && referredBy !== currentUserId) {
-                localStorage.setItem('arovaq_referrer', referredBy);
-                registerReferral(currentUserId, referredBy);
-            }
-
-            fetchListingsData();
-            fetchUserReferralCount(currentUserId);
-            fetchLiveLeaderboards();
-        });
-
-        function acceptAffiliateOnboarding() {
-            const checked = document.getElementById('affiliateTcCheck').checked;
-            if (!checked) {
-                alert('Please check the box to agree to the Affiliate Terms & Conditions.');
-                return;
-            }
-            localStorage.setItem(`affiliate_joined_${currentUserId}`, 'true');
-            document.getElementById('affiliateOnboardingModal').classList.add('hidden');
-            registerReferral(currentUserId, localStorage.getItem('arovaq_referrer') || currentUserId);
-            alert('Affiliate status activated successfully! Your referral link is now live.');
+            fetchUserReferralCount(currentUser.id);
         }
 
         function switchTab(tabName) {
@@ -376,12 +408,24 @@
             document.getElementById(`nav${tabName}`).classList.add('text-teal-400');
         }
 
-        function openListingModal() { document.getElementById('listingModal').classList.remove('hidden'); }
+        function openListingModal() { 
+            if (!currentUser) {
+                alert('Please sign in via your Profile tab first to list a product.');
+                switchTab('Profile');
+                return;
+            }
+            document.getElementById('listingModal').classList.remove('hidden'); 
+        }
         function closeListingModal() { document.getElementById('listingModal').classList.add('hidden'); }
         function openFAQModal() { document.getElementById('faqModal').classList.remove('hidden'); }
         function closeFAQModal() { document.getElementById('faqModal').classList.add('hidden'); }
 
         async function submitProductListing() {
+            if (!currentUser) {
+                alert('Please sign in first.');
+                return;
+            }
+
             const title = document.getElementById('listingTitle').value.trim();
             const priceUsd = parseFloat(document.getElementById('listingPrice').value);
             const category = document.getElementById('listingCategory').value;
@@ -401,12 +445,12 @@
 
             try {
                 const { error } = await _supabase.from('listings').insert([
-                    { title, price_usd: priceUsd, price_kes: priceKes, category, product_link: productLink, creator_id: currentUserId }
+                    { title, price_usd: priceUsd, price_kes: priceKes, category, product_link: productLink, creator_id: currentUser.id }
                 ]);
 
                 if (error) throw error;
 
-                alert('Product listed successfully with instant payout integration!');
+                alert('Product listed successfully!');
                 closeListingModal();
                 fetchListingsData();
                 fetchLiveLeaderboards();
@@ -432,7 +476,7 @@
 
         async function fetchLiveLeaderboards() {
             try {
-                const { data: affData, error: affErr } = await _supabase.from('affiliates').select('telegram_id, referred_by');
+                const { data: affData, error: affErr } = await _supabase.from('affiliates').select('user_id, referred_by');
                 const affContainer = document.getElementById('affiliatesLeaderboardList');
                 
                 if (!affErr && affData) {
@@ -449,7 +493,7 @@
                     if (sortedAff.length > 0) {
                         affContainer.innerHTML = sortedAff.map(([id, count], index) => `
                             <div class="flex justify-between items-center p-2.5 bg-gray-900/60 rounded-xl border border-teal-900/30">
-                                <span class="text-gray-200">${index + 1}. User ID: ${id.length > 8 ? id.substring(0, 8) + '...' : id}</span>
+                                <span class="text-gray-200">${index + 1}. User ID: ${id.substring(0, 6)}...</span>
                                 <span class="text-teal-400 font-bold">${count} Friend${count === 1 ? '' : 's'}</span>
                             </div>
                         `).join('');
@@ -474,7 +518,7 @@
                     if (sortedCreators.length > 0) {
                         creatorContainer.innerHTML = sortedCreators.map(([id, vol], index) => `
                             <div class="flex justify-between items-center p-2.5 bg-gray-900/60 rounded-xl border border-teal-900/30">
-                                <span class="text-gray-200">${index + 1}. Creator: ${id.length > 8 ? id.substring(0, 8) + '...' : id}</span>
+                                <span class="text-gray-200">${index + 1}. Creator ID: ${id.substring(0, 6)}...</span>
                                 <span class="text-teal-400 font-bold">$${vol.toLocaleString()} Volume</span>
                             </div>
                         `).join('');
@@ -553,21 +597,23 @@
 
         async function registerReferral(userId, referrerId) {
             try {
+                await _supabase.from('affiliates മറ്റൊരുupsert'...); // standard upsert
                 await _supabase.from('affiliates').upsert([
-                    { telegram_id: String(userId), referred_by: String(referrerId) }
-                ], { onConflict: 'telegram_id' });
+                    { user_id: String(userId), referred_by: String(referrerId) }
+                ], { onConflict: 'user_id' });
             } catch (err) {
                 console.log("Referral registration pending");
             }
         }
 
         function saveWalletDetails() {
+            if (!currentUser) return;
             const wallet = document.getElementById('payoutAccountInput').value.trim();
             if (!wallet) {
                 alert('Please enter a valid USDT/TON crypto wallet address.');
                 return;
             }
-            localStorage.setItem(`payout_${currentUserId}`, wallet);
+            localStorage.setItem(`payout_${currentUser.id}`, wallet);
             alert('Instant crypto wallet payout details saved securely!');
         }
 
@@ -575,7 +621,7 @@
             const input = document.getElementById('referralLinkInput');
             input.select();
             navigator.clipboard.writeText(input.value);
-            alert('Referral link copied to clipboard!');
+            alert('Permanent referral link copied to clipboard!');
         }
     </script>
 </body>
